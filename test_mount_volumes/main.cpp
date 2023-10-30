@@ -17,5 +17,6 @@ int main(int argc, char** argv){
         std::cerr<< "unmount failed: " << argv[2] << std::endl;
         return 1;
     }
+    std::cout<<"unmount success: " << argv[2] << std::endl;
     return 0;
 }
