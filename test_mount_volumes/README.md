@@ -19,10 +19,7 @@ sudo ./volumes /tmp/test_mount_src/ /tmp/test_mount_dest/
 Now you can see the file `/tmp/test_mount_src/test_file` in `/tmp/test_mount_dest/` <br>
 Sudo here is required because of the __CAP_SYS_ADMIN__ capability. In the future, a specific user may be created which will manage the mounts. <br>
 
-Mounts can be unmounted by the following command:
-```bash
-sudo umount /tmp/test_mount_dest/
-```
+Mounts can be unmounted by pressing the enter key. <br>
 
 ## VOLUMES
 

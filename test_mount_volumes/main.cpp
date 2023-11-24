@@ -11,5 +11,12 @@ int main(int argc, char** argv){
         return 1;
     }
     std::cout << "mount success: " << argv[1] << " -> " << argv[2] << std::endl;
+    std::cout<<"press enter to unmount"<<std::endl;
+    std::cin.get();
+    if (unmount_dir(argv[2]) != 0) {
+        std::cerr<< "unmount failed: " << argv[2] << std::endl;
+        return 1;
+    }
+    std::cout<<"unmount success: " << argv[2] << std::endl;
     return 0;
 }
