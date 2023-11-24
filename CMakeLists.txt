@@ -11,3 +11,4 @@ add_executable(mydocker src/main.cpp
 target_include_directories(mydocker PRIVATE include)
 add_executable(test_bin test_binary/main.cpp)
 add_executable(volumes test_mount_volumes/bind_mount.h test_mount_volumes/bind_mount.cpp test_mount_volumes/main.cpp)
+add_executable(namespaces test_create_namespace/create_namespace.cpp test_create_namespace/create_namespace.h test_create_namespace/main.cpp)
