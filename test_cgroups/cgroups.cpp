@@ -1,3 +1,6 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+
 #include <fstream>
 #include <iostream>
 #include <filesystem>
@@ -14,19 +17,20 @@ void create_cgroup(const std::string &cgroup_name) {
         std::cerr << "Failed to create directory: " << e.what() << '\n';
     }
 
+
     //not sure about this part
     pid_t pid = getpid();
-    std::cout<<pid<<std::endl;
+    std::cout << pid << std::endl;
     std::ofstream procs_file(cgroup_path + "/cgroup.procs");
     procs_file << pid;
 }
 
-void set_cpu_limit(const std::string& cgroup_name, double percentage) {
+void set_cpu_limit(const std::string &cgroup_name, double percentage) {
 
 }
 
-void set_pids_limit(const std::string& cgroup_name, size_t pids_number) {
+void set_pids_limit(const std::string &cgroup_name, size_t pids_number) {
 
 }
 
-void set_memory_limit_mb(const std::string& cgroup_name, size_t megabytes) { }
+void set_memory_limit_mb(const std::string &cgroup_name, size_t megabytes) {}
