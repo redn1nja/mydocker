@@ -48,6 +48,7 @@ void add_cpu_controllers(const std::string &cgroup_name) {
 void set_cpu_limit(const std::string &cgroup_name, double proportion) {
     // proportion can be in the range [1, 10000].
     // doesn't make sense if we are the only child
+    add_cpu_controllers(cgroup_name);
     std::string cgroup_folder_path = CGROUP_PATH + cgroup_name;
     std::ofstream cpu_weight_file(cgroup_folder_path + "/cpu.weight");
 
