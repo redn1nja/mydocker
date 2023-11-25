@@ -24,25 +24,40 @@ void create_cgroup(const std::string &cgroup_name) {
     std::ofstream procs_file(cgroup_folder_path + "/cgroup.procs");
     if (!procs_file.is_open()) {
         std::cerr << "Failed to open cgroup.procs file for cgroup " << cgroup_name << "\n";
-        exit(EXIT_FAILURE); //TODO: change to throwing exception
+        exit(EXIT_FAILURE); //TODO: change to throwing fancy custom exception
     }
     procs_file << pid;
     procs_file.close();
 }
 
-void add_cpu_controllers(const std::string &cgroup_name) {
+void add_controller(const std::string &cgroup_name, const std::string &controller_name) {
     std::string cgroup_folder_path = CGROUP_PATH;
-    std::ofstream cgroup_child_controllers_file(cgroup_folder_path + "/cgroup.subtree_control");
-
+    std::ofstream cgroup_child_controllers_file(cgroup_folder_path + "cgroup.subtree_control");
     if (!cgroup_child_controllers_file.is_open()) {
         std::cerr << "Failed to open cgroup.subtree_control file for cgroup " << cgroup_name << "\n";
         exit(EXIT_FAILURE);
     }
-    cgroup_child_controllers_file << " cpu";
-    cgroup_child_controllers_file << " cpuset";
-    // cgroup_child_controllers_file << " io";
-    // cgroup_child_controllers_file << " rdma";
+    std::string to_add = "+" + controller_name;
+    cgroup_child_controllers_file << to_add;
     cgroup_child_controllers_file.close();
+}
+
+void delete_controller(const std::string &cgroup_name, const std::string &controller_name) {
+    // don't try to delete default controllers (pids, memory)
+    std::string cgroup_folder_path = CGROUP_PATH;
+    std::ofstream cgroup_child_controllers_file(cgroup_folder_path + "cgroup.subtree_control");
+    if (!cgroup_child_controllers_file.is_open()) {
+        std::cerr << "Failed to open cgroup.subtree_control file for cgroup " << cgroup_name << "\n";
+        exit(EXIT_FAILURE);
+    }
+    std::string to_delete = "-" + controller_name;
+    cgroup_child_controllers_file << to_delete;
+    cgroup_child_controllers_file.close();
+}
+
+void add_cpu_controllers(const std::string &cgroup_name) {
+    add_controller(cgroup_name, "cpu");
+    add_controller(cgroup_name, "cpuset");
 }
 
 void set_cpu_limit(const std::string &cgroup_name, double proportion) {
