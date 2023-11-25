@@ -1,7 +1,3 @@
-//
-// Created by sofiiafolv on 11/24/23.
-//
-
 #ifndef MYDOCKER_CREATE_NAMESPACE_H
 #define MYDOCKER_CREATE_NAMESPACE_H
 #include <sched.h>

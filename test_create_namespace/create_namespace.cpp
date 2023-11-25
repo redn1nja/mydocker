@@ -1,7 +1,3 @@
-//
-// Created by sofiiafolv on 11/24/23.
-//
-
 #include "create_namespace.h"
 
 int move_process_to_new_ns(int flags) {

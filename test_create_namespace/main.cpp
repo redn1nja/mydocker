@@ -1,7 +1,6 @@
 #include <err.h>
-#include <sched.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <unistd.h>
 #include "create_namespace.h"
 
@@ -43,7 +42,7 @@ main(int argc, char *argv[])
     if (optind >= argc)
         usage(argv[0]);
 
-    if (move_process_to_new_ns(flags) == -1)
+    if (move_process_to_new_ns(CLONE_FS) == -1)
         err(EXIT_FAILURE, "unshare");
 
     execvp(argv[optind], &argv[optind]);
