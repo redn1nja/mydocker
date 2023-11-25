@@ -10,19 +10,19 @@
 #include <memory>
 
 class MycontainerConfig {
-private:
+public:
+    static std::vector<std::string> root_mount_points;
     int pipefd[2];
     // шось неймспейсне софія додасть
     // шось сігрупне настя додасть
     std::vector<std::string> mount_points;
     std::string root;
-public:
     MycontainerConfig() = delete;
-
     MycontainerConfig(std::vector<std::string> mount_points,
                       std::string root) :
             mount_points(std::move(mount_points)),
             root(std::move(root)) {
+//        mount_root();
         if (pipe(pipefd) == -1) {
             perror("pipe");
             exit(EXIT_FAILURE);
@@ -32,27 +32,32 @@ public:
 
 class Mycontainer {
 private:
-    std::vector<std::string> names;
-    std::vector<std::vector<char *>> args; // мені здається шо це треба буде для форка
-    std::vector<int> pids;
-    std::vector<int> status;
-    std::vector<MycontainerConfig> config;
-    std::vector<bool> is_running;
+    std::string name;
+    std::vector<char *> args; // мені здається шо це треба буде для форка
+    int pid = -1;
+    int status = -1;
+    MycontainerConfig config;
+    bool is_running;
 public:
+    void mount_root() const;
     Mycontainer() = delete;
-    Mycontainer(std::vector<std::string> names,
-                std::vector<std::vector<char *>> args,
-                std::vector<MycontainerConfig> config) :
-            names(std::move(names)),
+    Mycontainer(std::string name,
+                std::vector<char *> args,
+                MycontainerConfig config) :
+            name(std::move(name)),
             args(std::move(args)),
-            config(std::move(config)) {}
+            config(std::move(config)),
+            is_running(false)
+            {}
 
     Mycontainer &operator=(const Mycontainer &other) = default;
     Mycontainer(const Mycontainer &other) = default;
     std::unique_ptr<Mycontainer> clone() { return std::make_unique<Mycontainer>(*this); }
     void start();
+    void run();
     void stop();
     void kill();
+    static int child_func(void *arg);
     ~Mycontainer() = default;
 };
 

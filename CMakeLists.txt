@@ -9,9 +9,17 @@ set(CMAKE_CXX_STANDARD 17)
 add_executable(${PROJECT_NAME} src/main.cpp
         include/mydocker.h src/mydocker.cpp
         include/mycontainer.h src/mycontainer.cpp
+        test_create_namespace/create_namespace.cpp test_create_namespace/create_namespace.h
+        test_chroot/setup_root.cpp test_chroot/setup_root.h
+        test_cgroups/cgroups.h test_cgroups/cgroups.cpp
+        test_mount_volumes/bind_mount.h test_mount_volumes/bind_mount.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE include)
+target_include_directories(${PROJECT_NAME} PRIVATE test_cgroups)
+target_include_directories(${PROJECT_NAME} PRIVATE test_chroot)
+target_include_directories(${PROJECT_NAME} PRIVATE test_create_namespace)
+target_include_directories(${PROJECT_NAME} PRIVATE test_mount_volumes)
 
 add_executable(test_bin test_binary/main.cpp)
 add_executable(volumes test_mount_volumes/bind_mount.h test_mount_volumes/bind_mount.cpp test_mount_volumes/main.cpp)

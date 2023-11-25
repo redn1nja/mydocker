@@ -10,5 +10,5 @@
 
 int mount_dir(const std::string& name, const std::string& mountpoint);
 int unmount_dir(const std::string& mountpoint);
-
+int create_mountpoint(const std::string& mountpoint);
 #endif //MYDOCKER_BIND_MOUNT_H
