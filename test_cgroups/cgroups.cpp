@@ -11,34 +11,42 @@
 
 void create_cgroup(const std::string &cgroup_name) {
     std::string cgroup_folder_path = CGROUP_PATH + cgroup_name;
-/*    try {
-        std::filesystem::create_directory(cgroup_folder_path);
-        std::cout << "Directory created successfully.\n";
-    }
-    catch (const std::filesystem::filesystem_error &e) {
-        std::cerr << "Failed to create directory: " << e.what() << '\n';
-        exit(EXIT_FAILURE); //TODO: change to throwing exception
-    }*/
+
     if (mkdir(cgroup_folder_path.c_str(), 0755) != 0) {
         std::cerr << "Failed to create cgroup " << cgroup_name << "\n";
     }
     else {
         std::cout << "Directory created successfully."<<std::endl;
     }
-    //not sure about this part
+
     pid_t pid = getpid();
     std::cout << "pid: " << " " << pid << std::endl;
     std::ofstream procs_file(cgroup_folder_path + "/cgroup.procs");
     if (!procs_file.is_open()) {
         std::cerr << "Failed to open cgroup.procs file for cgroup " << cgroup_name << "\n";
-        exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE); //TODO: change to throwing exception
     }
     procs_file << pid;
     procs_file.close();
 }
 
-void set_cpu_limit(const std::string &cgroup_name, double percentage) {
+void add_cpu_controllers(const std::string &cgroup_name) {
+    std::string cgroup_folder_path = CGROUP_PATH;
+    std::ofstream cgroup_child_controllers_file(cgroup_folder_path + "/cgroup.subtree_control", std::ios::out | std::ios::trunc);
 
+    if (!cgroup_child_controllers_file.is_open()) {
+        std::cerr << "Failed to open cgroup.subtree_control file for cgroup " << cgroup_name << "\n";
+        exit(EXIT_FAILURE);
+    }
+    cgroup_child_controllers_file << " cpu";
+    cgroup_child_controllers_file << " cpuset";
+    // cgroup_child_controllers_file << " io";
+    // cgroup_child_controllers_file << " rdma";
+    cgroup_child_controllers_file.close();
+}
+
+void set_cpu_limit(const std::string &cgroup_name, double percentage) {
+    
 }
 
 void set_pids_limit(const std::string &cgroup_name, size_t pids_number) {
