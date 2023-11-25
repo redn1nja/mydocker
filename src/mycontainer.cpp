@@ -73,12 +73,7 @@ void Mycontainer::run(){
 }
 
 void Mycontainer::start() {
-    char* whole_stack = new char[STACK_SIZE];
-    void* stack;
-    void* stack_top;
-    stack = whole_stack;
-    stack_top = static_cast<char*>(stack) + STACK_SIZE;
-    switch (pid = create_process_in_new_ns(&Mycontainer::child_func, stack_top,  CLONE_NEWNS | SIGCHLD,  this)){
+    switch (pid = create_process_in_new_ns(&Mycontainer::child_func, STACK_SIZE,  CLONE_NEWNS | SIGCHLD,  this)){
         case -1:
             std::cerr<<"failed to create container"<<std::endl;
             exit(EXIT_FAILURE);
