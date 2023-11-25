@@ -60,6 +60,6 @@ void set_memory_limit_mb(const std::string &cgroup_name, size_t megabytes) {
         std::cerr << "Failed to open memory.max file for cgroup " << cgroup_name << "\n";
         exit(EXIT_FAILURE);
     }
-    memory_limit_file << megabytes;
+    memory_limit_file << convert_to_mb(megabytes);
     memory_limit_file.close();
 }
