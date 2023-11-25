@@ -32,7 +32,7 @@ void create_cgroup(const std::string &cgroup_name) {
 
 void add_cpu_controllers(const std::string &cgroup_name) {
     std::string cgroup_folder_path = CGROUP_PATH;
-    std::ofstream cgroup_child_controllers_file(cgroup_folder_path + "/cgroup.subtree_control", std::ios::out | std::ios::trunc);
+    std::ofstream cgroup_child_controllers_file(cgroup_folder_path + "/cgroup.subtree_control");
 
     if (!cgroup_child_controllers_file.is_open()) {
         std::cerr << "Failed to open cgroup.subtree_control file for cgroup " << cgroup_name << "\n";
@@ -45,8 +45,18 @@ void add_cpu_controllers(const std::string &cgroup_name) {
     cgroup_child_controllers_file.close();
 }
 
-void set_cpu_limit(const std::string &cgroup_name, double percentage) {
-    
+void set_cpu_limit(const std::string &cgroup_name, double proportion) {
+    // proportion can be in the range [1, 10000].
+    // doesn't make sense if we are the only child
+    std::string cgroup_folder_path = CGROUP_PATH + cgroup_name;
+    std::ofstream cpu_weight_file(cgroup_folder_path + "/cpu.weight");
+
+    if (!cpu_weight_file.is_open()) {
+        std::cerr << "Failed to open cpu.weight file for cgroup " << cgroup_name << "\n";
+        exit(EXIT_FAILURE);
+    }
+    cpu_weight_file << proportion;
+    cpu_weight_file.close();
 }
 
 void set_pids_limit(const std::string &cgroup_name, size_t pids_number) {
