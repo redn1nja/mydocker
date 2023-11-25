@@ -8,6 +8,8 @@
 
 #define CGROUP_PATH "/sys/fs/cgroup/"
 
+constexpr size_t convert_to_mb(size_t size) { return size * 1024 * 1024; }
+
 void create_cgroup(const std::string &cgroup_name);
 void set_cpu_limit(const std::string &cgroup_name, double percentage);
 void set_pids_limit(const std::string &cgroup_name, size_t pids_number);
