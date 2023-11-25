@@ -11,12 +11,11 @@
 #include "bind_mount.h"
 #include "setup_root.h"
 
-std::vector<std::string> MycontainerConfig::root_mount_points = {"/usr","/bin", "/lib", "/lib64", "/proc"};
+std::vector<std::string> MycontainerConfig::root_mount_points = {"/usr", "/lib" ,"/bin", "/lib64", "/proc"};
 
 std::string create_path(const std::string& root, const std::string& path){
     auto without_slash = path[0] == '/' ? path.substr(1) : path;
     auto pathh = std::filesystem::path(root) / without_slash;
-//    std::cout<<"path is" <<pathh.string()<<std::endl;
     return pathh.string();
 }
 
@@ -41,6 +40,10 @@ int Mycontainer::child_func(void *arg) {
 }
 
 void Mycontainer::run(){
+    if(pid!=-1){
+        return;
+    }
+    std::cout<<pid<<std::endl;
     std::cout<<"running"<<std::endl;
     create_cgroup("test");
     set_pids_limit("test", 10);
@@ -83,6 +86,24 @@ void Mycontainer::start() {
             break;
         default:
             wait(&status);
+            std::cout<<"exited with status "<<(status>>8)<<std::endl;
+            std::string mnt = "mnt";
+            auto mountpoint = create_path(config.root, mnt);
+//            mount_root();
+            for (auto &mount : config.mount_points) {
+                auto mount_name = create_path(mountpoint, mount);
+                std::cout<<"umounting "<<mount_name<<std::endl;
+                if (unmount_dir(mount_name)!=0){
+                    std::cerr<<"failed to umount"<<std::endl;
+                }
+            }
+            for (auto &mount : MycontainerConfig::root_mount_points) {
+                auto mount_name = create_path(config.root, mount);
+                std::cout<<"umounting "<<mount_name<<std::endl;
+                if (unmount_dir(mount_name)!=0){
+                    std::cerr<<"failed to umount"<<std::endl;
+                }
+            }
             break;
 
 
