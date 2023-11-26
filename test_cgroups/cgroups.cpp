@@ -14,9 +14,8 @@ void create_cgroup(const std::string &cgroup_name) {
 
     if (mkdir(cgroup_folder_path.c_str(), 0755) != 0) {
         std::cerr << "Failed to create cgroup " << cgroup_name << "\n";
-    }
-    else {
-        std::cout << "Directory created successfully."<<std::endl;
+    } else {
+        std::cout << "Directory created successfully." << std::endl;
     }
 
     pid_t pid = getpid();
@@ -30,29 +29,32 @@ void create_cgroup(const std::string &cgroup_name) {
     procs_file.close();
 }
 
-void add_controller(const std::string &cgroup_name, const std::string &controller_name) {
+
+void manage_controller(const std::string &cgroup_name, const std::string &controller_name, bool add) {
+    // if true add else delete controller
     std::string cgroup_folder_path = CGROUP_PATH;
     std::ofstream cgroup_child_controllers_file(cgroup_folder_path + "cgroup.subtree_control");
     if (!cgroup_child_controllers_file.is_open()) {
         std::cerr << "Failed to open cgroup.subtree_control file for cgroup " << cgroup_name << "\n";
         exit(EXIT_FAILURE);
     }
-    std::string to_add = "+" + controller_name;
-    cgroup_child_controllers_file << to_add;
+    std::string sign_name;
+    if (add) {
+        sign_name = "+" + controller_name;
+    } else {
+        sign_name = "-" + controller_name;
+    }
+    cgroup_child_controllers_file << sign_name;
     cgroup_child_controllers_file.close();
+}
+
+void add_controller(const std::string &cgroup_name, const std::string &controller_name) {
+    manage_controller(cgroup_name, controller_name, true);
 }
 
 void delete_controller(const std::string &cgroup_name, const std::string &controller_name) {
     // don't try to delete default controllers (pids, memory)
-    std::string cgroup_folder_path = CGROUP_PATH;
-    std::ofstream cgroup_child_controllers_file(cgroup_folder_path + "cgroup.subtree_control");
-    if (!cgroup_child_controllers_file.is_open()) {
-        std::cerr << "Failed to open cgroup.subtree_control file for cgroup " << cgroup_name << "\n";
-        exit(EXIT_FAILURE);
-    }
-    std::string to_delete = "-" + controller_name;
-    cgroup_child_controllers_file << to_delete;
-    cgroup_child_controllers_file.close();
+    manage_controller(cgroup_name, controller_name, false);
 }
 
 void add_cpu_controllers(const std::string &cgroup_name) {
