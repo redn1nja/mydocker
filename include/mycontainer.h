@@ -12,7 +12,9 @@
 class MycontainerConfig {
 public:
     static std::vector<std::string> root_mount_points;
-    int pipefd[2];
+    int pipefd_out[2];
+    int pipefd_in[2];
+    int pipefd_err[2];
     int namespace_flags;
     std::string cgroup_name;
     size_t memory_limit_mb = 5; // actually random values
@@ -20,6 +22,7 @@ public:
     size_t cpu_proportion = 100;
     std::vector<std::string> mount_points;
     std::string root;
+
     MycontainerConfig() = delete;
     MycontainerConfig(std::vector<std::string> mount_points,
                       std::string root, int namespaces_flags) :
@@ -27,8 +30,16 @@ public:
             namespace_flags(namespaces_flags),
             root(std::move(root)) {
 //        mount_root();
-        if (pipe(pipefd) == -1) {
-            perror("pipe");
+        if (pipe(pipefd_out) == -1) {
+            perror("pipe out");
+            exit(EXIT_FAILURE);
+        }
+        if (pipe(pipefd_in) == -1) {
+            perror("pipe in");
+            exit(EXIT_FAILURE);
+        }
+        if (pipe(pipefd_err) == -1) {
+            perror("pipe err");
             exit(EXIT_FAILURE);
         }
     }
@@ -51,9 +62,7 @@ public:
             name(std::move(name)),
             args(std::move(args)),
             config(std::move(config)),
-            is_running(false)
-            {}
-
+            is_running(false) {}
     Mycontainer &operator=(const Mycontainer &other) = default;
     Mycontainer(const Mycontainer &other) = default;
     std::unique_ptr<Mycontainer> clone() { return std::make_unique<Mycontainer>(*this); }
@@ -63,6 +72,7 @@ public:
     void kill();
     static int child_func(void *arg);
     [[nodiscard]] int getPID() const{return pid;};
+    MycontainerConfig getConfig() {return config;};
     ~Mycontainer() = default;
 };
 
