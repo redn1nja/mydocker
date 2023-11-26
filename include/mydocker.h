@@ -11,20 +11,20 @@
 #include "signal.h"
 #include <iostream>
 
-class Mydocker{
+class Mydocker {
 private:
     std::vector<std::unique_ptr<Mycontainer>> containers;
     int attached_container_index = -1;
 public:
     Mydocker() = default;
     ~Mydocker() = default;
-    Mydocker& operator=(const Mydocker& other) = delete;
-    Mydocker(const Mydocker& other) = delete;
-    void run(size_t index) { containers[index]->start();}
-
+    Mydocker &operator=(const Mydocker &other) = delete;
+    Mydocker(const Mydocker &other) = delete;
+    void run(size_t index) { containers[index]->start(); }
     template<class... Args>
-    void create(Args&&...args) {
-        containers.push_back(std::make_unique<Mycontainer>(std::forward<Args>(args)...)); }
+    void create(Args &&...args) {
+        containers.push_back(std::make_unique<Mycontainer>(std::forward<Args>(args)...));
+    }
     void list_containers();
     void stop(size_t index);
     void resume(size_t index);
