@@ -58,6 +58,7 @@ public:
     void stop();
     void kill();
     static int child_func(void *arg);
+    [[nodiscard]] int getPID() const{return pid;};
     ~Mycontainer() = default;
 };
 
