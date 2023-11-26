@@ -10,6 +10,7 @@
 #include "cgroups.h"
 #include "bind_mount.h"
 #include "setup_root.h"
+#include <unistd.h>
 
 std::vector<std::string> MycontainerConfig::root_mount_points = {"/usr", "/lib" ,"/bin", "/lib64", "/proc"};
 
@@ -40,9 +41,30 @@ int Mycontainer::child_func(void *arg) {
 }
 
 void Mycontainer::run(){
-    if(pid!=-1){
-        return;
+    if (close(config.pipefd_in[1]) != 0) {
+        std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_in[1] << std::endl;
     }
+    if (close(config.pipefd_out[0]) != 0) {
+        std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_out[0] << std::endl;
+    }
+    if (close(config.pipefd_err[0]) != 0) {
+        std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_err[0] << std::endl;
+    }
+
+    dup2(config.pipefd_in[0], STDIN_FILENO);
+    dup2(config.pipefd_out[1], STDOUT_FILENO);
+    dup2(config.pipefd_err[1], STDERR_FILENO);
+
+    if (close(config.pipefd_in[0]) != 0) {
+        std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_in[0] << std::endl;
+    }
+    if (close(config.pipefd_out[1]) != 0) {
+        std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_out[1] << std::endl;
+    }
+    if (close(config.pipefd_err[1]) != 0) {
+        std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_err[1] << std::endl;
+    }
+
     std::cout<<pid<<std::endl;
     std::cout<<"running"<<std::endl;
     create_cgroup("test");
@@ -80,8 +102,19 @@ void Mycontainer::start() {
         case 0:
             break;
         default:
+            if (close(config.pipefd_in[0]) != 0) {
+                std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_in[0] << std::endl;
+            }
+            if (close(config.pipefd_out[1]) != 0) {
+                std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_out[1] << std::endl;
+            }
+            if (close(config.pipefd_err[1]) != 0) {
+                std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_err[1] << std::endl;
+            }
+
             wait(&status);
             std::cout<<"exited with status "<<(status>>8)<<std::endl;
+
             std::string mnt = "mnt";
             auto mountpoint = create_path(config.root, mnt);
 //            mount_root();

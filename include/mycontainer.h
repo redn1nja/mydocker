@@ -12,7 +12,9 @@
 class MycontainerConfig {
 public:
     static std::vector<std::string> root_mount_points;
-    int pipefd[2];
+    int pipefd_out[2];
+    int pipefd_in[2];
+    int pipefd_err[2];
     // шось неймспейсне софія додасть
     std::string cgroup_name;
     size_t memory_limit_mb = 5; // actually random values
@@ -26,8 +28,16 @@ public:
             mount_points(std::move(mount_points)),
             root(std::move(root)) {
 //        mount_root();
-        if (pipe(pipefd) == -1) {
-            perror("pipe");
+        if (pipe(pipefd_out) == -1) {
+            perror("pipe out");
+            exit(EXIT_FAILURE);
+        }
+        if (pipe(pipefd_in) == -1) {
+            perror("pipe in");
+            exit(EXIT_FAILURE);
+        }
+        if (pipe(pipefd_err) == -1) {
+            perror("pipe err");
             exit(EXIT_FAILURE);
         }
     }
@@ -62,6 +72,7 @@ public:
     void kill();
     static int child_func(void *arg);
     [[nodiscard]] int getPID() const{return pid;};
+    MycontainerConfig getConfig() {return config;};
     ~Mycontainer() = default;
 };
 

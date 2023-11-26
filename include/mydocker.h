@@ -14,6 +14,7 @@
 class Mydocker{
 private:
     std::vector<std::unique_ptr<Mycontainer>> containers;
+    int attached_container_index = -1;
 public:
     Mydocker() = default;
     ~Mydocker() = default;
@@ -28,6 +29,8 @@ public:
     void stop(size_t index);
     void resume(size_t index);
     void kill_container(size_t index);
+    void listen(size_t index);
+    void detach();
 };
 
 #endif //MYDOCKER_MYDOCKER_H
