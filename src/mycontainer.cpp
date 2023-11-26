@@ -114,12 +114,8 @@ void Mycontainer::start() {
             }
 
             wait(&status);
-<<<<<<< HEAD
-            std::cout<<"exited with status "<<(status>>8)<<std::endl;
-
-=======
             std::cout << "exited with status " << (status >> 8) << std::endl;
->>>>>>> c3b42d28c5e34dc5f3ec544cdfde63e53fda6e21
+
             std::string mnt = "mnt";
             auto mountpoint = create_path(config.root, mnt);
 //            mount_root();
