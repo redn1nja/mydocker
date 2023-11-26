@@ -8,8 +8,7 @@
 #include "create_namespace.h"
 
 static void
-usage(char *pname)
-{
+usage(char *pname) {
     fprintf(stderr, "Usage: %s [options] program [arg...]\n", pname);
     fprintf(stderr, "Options can be:\n");
     fprintf(stderr, "    -C   unshare cgroup namespace\n");
@@ -23,22 +22,36 @@ usage(char *pname)
 }
 
 int
-main(int argc, char *argv[])
-{
+main(int argc, char *argv[]) {
     int flags, opt;
 
     flags = 0;
 
     while ((opt = getopt(argc, argv, "CimnptuU")) != -1) {
         switch (opt) {
-            case 'C': flags |= CLONE_NEWCGROUP;      break;
-            case 'i': flags |= CLONE_NEWIPC;        break;
-            case 'm': flags |= CLONE_NEWNS;         break;
-            case 'n': flags |= CLONE_NEWNET;        break;
-            case 'p': flags |= CLONE_NEWPID;        break;
-            case 'u': flags |= CLONE_NEWUTS;        break;
-            case 'U': flags |= CLONE_NEWUSER;       break;
-            default:  usage(argv[0]);
+            case 'C':
+                flags |= CLONE_NEWCGROUP;
+                break;
+            case 'i':
+                flags |= CLONE_NEWIPC;
+                break;
+            case 'm':
+                flags |= CLONE_NEWNS;
+                break;
+            case 'n':
+                flags |= CLONE_NEWNET;
+                break;
+            case 'p':
+                flags |= CLONE_NEWPID;
+                break;
+            case 'u':
+                flags |= CLONE_NEWUTS;
+                break;
+            case 'U':
+                flags |= CLONE_NEWUSER;
+                break;
+            default:
+                usage(argv[0]);
         }
     }
 

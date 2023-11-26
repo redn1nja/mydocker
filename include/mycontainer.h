@@ -20,6 +20,7 @@ public:
     size_t cpu_proportion = 100;
     std::vector<std::string> mount_points;
     std::string root;
+
     MycontainerConfig() = delete;
     MycontainerConfig(std::vector<std::string> mount_points,
                       std::string root) :
@@ -50,9 +51,7 @@ public:
             name(std::move(name)),
             args(std::move(args)),
             config(std::move(config)),
-            is_running(false)
-            {}
-
+            is_running(false) {}
     Mycontainer &operator=(const Mycontainer &other) = default;
     Mycontainer(const Mycontainer &other) = default;
     std::unique_ptr<Mycontainer> clone() { return std::make_unique<Mycontainer>(*this); }

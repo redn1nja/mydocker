@@ -4,7 +4,7 @@
 #include <iostream>
 #include "mydocker.h"
 
-int main(int argc, char**argv) {
+int main(int argc, char **argv) {
     if (argc != 3) {
         std::cerr << "Usage: " << argv[0] << " <new_root> <executable>" << std::endl;
         return 1;
@@ -18,7 +18,7 @@ int main(int argc, char**argv) {
     std::string new_root = argv[1];
     Mydocker mydocker;
     auto cfg = MycontainerConfig(mounts, new_root);
-    mydocker.create(arg1, args,cfg);
+    mydocker.create(arg1, args, cfg);
     mydocker.run(0);
     return 0;
 }

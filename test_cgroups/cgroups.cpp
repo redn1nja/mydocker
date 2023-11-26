@@ -15,7 +15,7 @@ void create_cgroup(const std::string &cgroup_name) {
     if (mkdir(cgroup_folder_path.c_str(), 0755) != 0) {
         std::cerr << "Failed to create cgroup " << cgroup_name << "\n";
     } else {
-        std::cout << "Directory created successfully." << std::endl;
+        std::cout << "Cgroup directory " << cgroup_name << " created successfully." << std::endl;
     }
 
     pid_t pid = getpid();
