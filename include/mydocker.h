@@ -24,8 +24,8 @@ public:
         containers.push_back(std::make_unique<Mycontainer>(std::forward<Args>(args)...)); }
     void list_containers();
     void stop(size_t index);
-    void resume(size_t);
-    void kill(size_t);
+    void resume(size_t index);
+    void kill(size_t index);
 };
 
 #endif //MYDOCKER_MYDOCKER_H
