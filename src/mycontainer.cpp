@@ -26,7 +26,7 @@ void Mycontainer::mount_root() const {
         std::cout << "mounting " << mount_name << std::endl;
         create_mountpoint(mount_name);
         if (mount_dir(mount, mount_name) != 0) {
-            std::cerr << "failed to mount" << std::endl;
+            std::cerr << "failed to mount " << mount_name << std::endl;
         }
     }
 }
@@ -60,7 +60,7 @@ void Mycontainer::run() {
         std::cout << "mounting " << mount << std::endl;
         create_mountpoint(mount_name);
         if (mount_dir(mount, mount_name) != 0) {
-            std::cerr << "failed to mount" << std::endl;
+            std::cerr << "failed to mount " << mount_name << std::endl;
         }
     }
     if (setup_root(config.root.c_str()) != 0) {
@@ -89,14 +89,14 @@ void Mycontainer::start() {
                 auto mount_name = create_path(mountpoint, mount);
                 std::cout << "umounting " << mount_name << std::endl;
                 if (unmount_dir(mount_name) != 0) {
-                    std::cerr << "failed to umount" << std::endl;
+                    std::cerr << "failed to umount " << mount_name << std::endl;
                 }
             }
             for (auto &mount: MycontainerConfig::root_mount_points) {
                 auto mount_name = create_path(config.root, mount);
                 std::cout << "umounting " << mount_name << std::endl;
                 if (unmount_dir(mount_name) != 0) {
-                    std::cerr << "failed to umount" << std::endl;
+                    std::cerr << "failed to umount " << mount_name << std::endl;
                 }
             }
             break;
