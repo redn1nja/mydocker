@@ -8,6 +8,8 @@
 #include <vector>
 #include <memory>
 #include "mycontainer.h"
+#include "signal.h"
+#include <iostream>
 
 class Mydocker {
 private:
@@ -25,7 +27,7 @@ public:
     void list_containers();
     void stop(size_t index);
     void resume(size_t index);
-    void kill(size_t index);
+    void kill_container(size_t index);
 };
 
 #endif //MYDOCKER_MYDOCKER_H
