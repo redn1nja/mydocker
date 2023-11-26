@@ -14,6 +14,7 @@ public:
     static std::vector<std::string> root_mount_points;
     int pipefd[2];
     // шось неймспейсне софія додасть
+    std::string cgroup_name;
     size_t memory_limit_mb = 5; // actually random values
     size_t pids_limit = 10;
     size_t cpu_proportion = 100;
