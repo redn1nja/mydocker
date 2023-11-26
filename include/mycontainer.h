@@ -15,7 +15,7 @@ public:
     int pipefd_out[2];
     int pipefd_in[2];
     int pipefd_err[2];
-    // шось неймспейсне софія додасть
+    int namespace_flags;
     std::string cgroup_name;
     size_t memory_limit_mb = 5; // actually random values
     size_t pids_limit = 10;
@@ -25,8 +25,9 @@ public:
 
     MycontainerConfig() = delete;
     MycontainerConfig(std::vector<std::string> mount_points,
-                      std::string root) :
+                      std::string root, int namespaces_flags) :
             mount_points(std::move(mount_points)),
+            namespace_flags(namespaces_flags),
             root(std::move(root)) {
 //        mount_root();
         if (pipe(pipefd_out) == -1) {
