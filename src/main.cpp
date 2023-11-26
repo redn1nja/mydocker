@@ -17,9 +17,8 @@ int main(int argc, char**argv) {
     mounts.emplace_back("/tmp");
     std::string new_root = argv[1];
     Mydocker mydocker;
-    mydocker.create(Mycontainer{args[0],
-                                args,
-                                MycontainerConfig{mounts, new_root}}.clone());
+    auto cfg = MycontainerConfig(mounts, new_root);
+    mydocker.create(arg1, args,cfg);
     mydocker.run(0);
     return 0;
 }

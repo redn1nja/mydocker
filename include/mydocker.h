@@ -18,7 +18,10 @@ public:
     Mydocker& operator=(const Mydocker& other) = delete;
     Mydocker(const Mydocker& other) = delete;
     void run(size_t index) { containers[index]->start();}
-    void create(std::unique_ptr<Mycontainer> mycontainer) { containers.push_back(std::move(mycontainer)); }
+
+    template<class... Args>
+    void create(Args&&...args) {
+        containers.push_back(std::make_unique<Mycontainer>(std::forward<Args>(args)...)); }
     void list_containers();
     void stop(size_t index);
     void resume(size_t);
