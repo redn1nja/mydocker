@@ -47,7 +47,7 @@ void Mycontainer::run(){
     std::cout<<"running"<<std::endl;
     create_cgroup("test");
     set_pids_limit("test", 10);
-    set_memory_limit_mb("test", 100*1024*1024);
+    set_memory_limit_mb("test", 100);
     set_cpu_limit("test", 5);
     std::string mnt = "mnt";
     auto mountpoint = create_path(config.root, mnt);
