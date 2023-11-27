@@ -34,19 +34,12 @@ public:
     size_t cpu_proportion = 100;
     std::vector<std::string> mount_points;
 
-
     MycontainerConfig() = default;
-
     MycontainerConfig(const MycontainerConfig &other) = default;
-
     MycontainerConfig &operator=(const MycontainerConfig &other) = default;
-
     MycontainerConfig(MycontainerConfig &&other) noexcept = default;
-
     MycontainerConfig &operator=(MycontainerConfig &&other) noexcept = default;
-
     ~MycontainerConfig() = default;
-
     MycontainerConfig(std::vector<std::string> mount_points,
                       std::string root, int namespaces_flags) :
             mount_points(std::move(mount_points)),
