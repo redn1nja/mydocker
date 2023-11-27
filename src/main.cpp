@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
     memset(&server, 0, sizeof(server));
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = htonl(INADDR_ANY);
-    server.sin_port = htons(port);
+    server.sin_port = htons(atoi(argv[1]));
     int res = bind(sd, (struct sockaddr *) &server, sizeof(server));
     if (res == -1) {
         std::cerr << "mydocker: failed to bind socket" << std::endl;
