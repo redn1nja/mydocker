@@ -81,6 +81,7 @@ public:
         output << "pids limit: " << config.pids_limit << std::endl;
         output << "cpu proportion: " << config.cpu_proportion << std::endl;
         output << "root: " << config.root << std::endl;
+        return output;
     }
 };
 
