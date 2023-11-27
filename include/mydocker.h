@@ -11,7 +11,7 @@
 #include "signal.h"
 #include <iostream>
 #include <unordered_map>
-#include "helper_functions.h"
+#include "socket_functions.h"
 
 enum commands {
     CREATE,
@@ -39,6 +39,7 @@ private:
     std::vector<std::unique_ptr<Mycontainer>> containers;
     int attached_container_index = -1;
 public:
+    int psd = 0;
     Mydocker() = default;
 
     ~Mydocker() = default;
@@ -67,7 +68,7 @@ public:
     void detach();
 
     template<class... Args>
-    void execute_command(const std::string &command, Args ...args, int fd) {
+    void execute_command(const std::string &command, Args ...args) {
         switch (commands[command]) {
             case CREATE:
                 create(std::forward<Args>(args)...);
@@ -86,7 +87,7 @@ public:
             case DETACH:
                 detach(std::forward<Args>(args)...);
             default:
-                writen(fd, "mydoker: no such command", sizeof ("mydoker: no such command"));
+                writen(psd, "mydocker: no such command", sizeof ("mydocker: no such command"));
         }
     }
 

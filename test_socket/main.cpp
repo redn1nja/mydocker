@@ -6,7 +6,7 @@
 #include <iostream>
 #include <cstring>
 #include "unistd.h"
-#include "helper_functions.h"
+#include "socket_functions.h"
 
 int main(int argc, char *argv[]) {
     struct sockaddr_in server;

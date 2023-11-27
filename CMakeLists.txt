@@ -14,7 +14,7 @@ add_executable(${PROJECT_NAME} src/main.cpp
         test_cgroups/cgroups.h test_cgroups/cgroups.cpp
         test_mount_volumes/bind_mount.h test_mount_volumes/bind_mount.cpp
         include/container_cfg.h
-        test_socket/helper_functions.cpp test_socket/helper_functions.h
+        test_socket/socket_functions.cpp test_socket/socket_functions.h
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE include)
@@ -31,8 +31,8 @@ add_executable(namespaces test_create_namespace/create_namespace.cpp test_create
 add_executable(change_root test_chroot/setup_root.cpp test_chroot/setup_root.h test_chroot/main.cpp)
 add_executable(cgroups test_cgroups/cgroups.h test_cgroups/cgroups.cpp test_cgroups/main.cpp)
 add_executable(socket test_socket/main.cpp
-        test_socket/helper_functions.cpp
-        test_socket/helper_functions.h)
+        test_socket/socket_functions.cpp
+        test_socket/socket_functions.h)
 
 
 
