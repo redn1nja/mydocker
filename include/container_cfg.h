@@ -8,7 +8,18 @@
 #define MYDOCKER_CONTAINER_CFG_H
 
 class MycontainerConfig {
+private:
+    int des_in = 0;
+    int des_out = 1;
+    int des_err = 2;
 public:
+    void set_in(int in) { des_in = in; }
+    void set_out(int out) { des_out = out; }
+    void set_err(int err) { des_err = err; }
+    int get_in() const { return des_in; }
+    int get_out() const { return des_out; }
+    int get_err() const { return des_err; }
+    
     std::string name;
     std::string root;
     std::vector<std::string> args;
@@ -23,19 +34,12 @@ public:
     size_t cpu_proportion = 100;
     std::vector<std::string> mount_points;
 
-
     MycontainerConfig() = default;
-
     MycontainerConfig(const MycontainerConfig &other) = default;
-
     MycontainerConfig &operator=(const MycontainerConfig &other) = default;
-
     MycontainerConfig(MycontainerConfig &&other) noexcept = default;
-
     MycontainerConfig &operator=(MycontainerConfig &&other) noexcept = default;
-
     ~MycontainerConfig() = default;
-
     MycontainerConfig(std::vector<std::string> mount_points,
                       std::string root, int namespaces_flags) :
             mount_points(std::move(mount_points)),

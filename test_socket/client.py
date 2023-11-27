@@ -10,13 +10,9 @@ def run_client(server_ip, server_port):
 
     try:
         while True:
-            # somehow integrate our CLI here
             msg = input("mydocker >>> ")
             msg = msg + "\n"
             client.send(msg.encode("utf-8")[:1024])
-
-            # do we have parial read/write in python sockets???
-            # how do we know the lenght of the buffer?
             response = client.recv(1024)
             response = response.decode("utf-8")
 
