@@ -14,6 +14,7 @@ add_executable(${PROJECT_NAME} src/main.cpp
         test_cgroups/cgroups.h test_cgroups/cgroups.cpp
         test_mount_volumes/bind_mount.h test_mount_volumes/bind_mount.cpp
         include/container_cfg.h
+        test_socket/helper_functions.cpp test_socket/helper_functions.h
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE include)
@@ -21,6 +22,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE test_cgroups)
 target_include_directories(${PROJECT_NAME} PRIVATE test_chroot)
 target_include_directories(${PROJECT_NAME} PRIVATE test_create_namespace)
 target_include_directories(${PROJECT_NAME} PRIVATE test_mount_volumes)
+target_include_directories(${PROJECT_NAME} PRIVATE test_socket)
+
 
 add_executable(test_bin test_binary/main.cpp)
 add_executable(volumes test_mount_volumes/bind_mount.h test_mount_volumes/bind_mount.cpp test_mount_volumes/main.cpp)
