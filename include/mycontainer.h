@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <iostream>
 
 class MycontainerConfig {
 public:
@@ -42,6 +43,13 @@ public:
             perror("pipe err");
             exit(EXIT_FAILURE);
         }
+    };
+    friend std::ostream &operator<<(std::ostream &output, const MycontainerConfig &config){
+        output << "cgroup name: " << config.cgroup_name << std::endl;
+        output << "memory limit (MB): " << config.memory_limit_mb << std::endl;
+        output << "pids limit: " << config.pids_limit << std::endl;
+        output << "cpu proportion: " << config.cpu_proportion << std::endl;
+        output << "root: " << config.root << std::endl;
     }
 };
 
