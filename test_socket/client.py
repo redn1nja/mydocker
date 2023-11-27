@@ -9,6 +9,7 @@ def run_client(server_ip, server_port):
         while True:
             # somehow integrate our CLI here
             msg = input("Enter message: ")
+            msg = msg + "\n"
             client.send(msg.encode("utf-8")[:1024])
 
             # do we have parial read/write in python sockets???

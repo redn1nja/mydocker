@@ -9,7 +9,7 @@ ssize_t readn(int fd, void *buffer, size_t n) {
     char *buf;
     buf = static_cast<char *>(buffer);
     for (totRead = 0; totRead < n;) {
-        numRead = read(fd, buf, n - totRead);
+        numRead = read(fd, buf + totRead, n - totRead);
         if (numRead == 0)
             return totRead;
         if (numRead == -1) {
@@ -19,7 +19,9 @@ ssize_t readn(int fd, void *buffer, size_t n) {
                 return -1;
         }
         totRead += numRead;
-        buf += numRead;
+        if (totRead <= n && buf[totRead - 1] == '\n'){
+            return totRead;
+        }
     }
     return totRead;
 }
@@ -30,7 +32,7 @@ ssize_t writen(int fd, const void *buffer, size_t n) {
     const char *buf;
     buf = static_cast<const char *>(buffer);
     for (totWritten = 0; totWritten < n;) {
-        numWritten = write(fd, buf, n - totWritten);
+        numWritten = write(fd, buf + totWritten, n - totWritten);
         if (numWritten <= 0) {
             if (numWritten == -1 && errno == EINTR)
                 continue;
@@ -38,7 +40,6 @@ ssize_t writen(int fd, const void *buffer, size_t n) {
                 return -1;
         }
         totWritten += numWritten;
-        buf += numWritten;
     }
     return totWritten;
 }
