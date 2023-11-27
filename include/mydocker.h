@@ -37,7 +37,7 @@ static std::unordered_map<std::string, commands> commands{{"create",          CR
 class Mydocker {
 private:
     std::vector<std::unique_ptr<Mycontainer>> containers;
-    int attached_container_index = -1;
+    size_t attached_container_index = -1;
 public:
     Mydocker() = default;
 

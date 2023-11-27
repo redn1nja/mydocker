@@ -11,6 +11,10 @@
 #include <iostream>
 
 class MycontainerConfig {
+private:
+    int des_out = 1;
+    int des_in = 0;
+    int des_err = 2;
 public:
     static std::vector<std::string> root_mount_points;
     int pipefd_out[2];
@@ -23,6 +27,15 @@ public:
     size_t cpu_proportion = 100;
     std::vector<std::string> mount_points;
     std::string root;
+
+    [[nodiscard]] int get_in() const { return des_in; }
+    [[nodiscard]] int get_out() const { return des_out; }
+    [[nodiscard]] int get_err() const { return des_err; }
+
+
+    void set_in(int des) { des_in = des; }
+    void set_out(int des) { des_out = des; }
+    void set_err(int des) { des_err = des; }
 
     MycontainerConfig() = delete;
     MycontainerConfig(std::vector<std::string> mount_points,
