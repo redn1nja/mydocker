@@ -39,6 +39,9 @@ private:
     std::vector<std::unique_ptr<Mycontainer>> containers;
     size_t attached_container_index = -1;
 public:
+    int fd_out = 1;
+    int fd_in = 0;
+    int fd_err = 2;
     int psd = 0;
     Mydocker() = default;
     ~Mydocker() = default;
@@ -62,6 +65,7 @@ public:
                 create(command_args[1]);
                 break;
             case RUN:
+                writen(psd, "mydocker: running container", sizeof ("mydocker: running container"));
                 run(std::stoul(command_args[1]));
                 break;
             case LIST_CONTAINERS:
@@ -78,9 +82,11 @@ public:
                 break;
             case LISTEN:
                 listen(std::stoul(command_args[1]));
+                writen(psd, "mydocker: listening", sizeof ("mydocker: listening"));
                 break;
             case DETACH:
                 detach();
+                writen(psd, "mydocker: detached", sizeof ("mydocker: detached"));
                 break;
             default:
                 writen(psd, "mydocker: no such command", sizeof ("mydocker: no such command"));

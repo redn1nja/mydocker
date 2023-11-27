@@ -7,6 +7,7 @@
 #ifndef MYDOCKER_CONTAINER_CFG_H
 #define MYDOCKER_CONTAINER_CFG_H
 
+const static std::vector<std::string> root_mount_points = {"/usr", "/lib", "/bin", "/lib64", "/proc"};
 class MycontainerConfig {
 private:
     int des_in = 0;
@@ -19,11 +20,10 @@ public:
     int get_in() const { return des_in; }
     int get_out() const { return des_out; }
     int get_err() const { return des_err; }
-    
+
     std::string name;
-    std::string root;
+    static std::string root;
     std::vector<std::string> args;
-    static std::vector<std::string> root_mount_points;
     int pipefd_out[2];
     int pipefd_in[2];
     int pipefd_err[2];
@@ -40,12 +40,12 @@ public:
     MycontainerConfig(MycontainerConfig &&other) noexcept = default;
     MycontainerConfig &operator=(MycontainerConfig &&other) noexcept = default;
     ~MycontainerConfig() = default;
-    MycontainerConfig(std::vector<std::string> mount_points,
-                      std::string root, int namespaces_flags) :
+
+    [[maybe_unused]] MycontainerConfig(std::vector<std::string> mount_points,
+                       int namespaces_flags) :
             mount_points(std::move(mount_points)),
-            namespace_flags(namespaces_flags),
-            root(std::move(root)) {
-//        mount_root();
+            namespace_flags(namespaces_flags)
+    {
         if (pipe(pipefd_out) == -1) {
             perror("pipe out");
             exit(EXIT_FAILURE);

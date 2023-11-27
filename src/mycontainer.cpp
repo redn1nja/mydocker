@@ -11,6 +11,32 @@
 #include "bind_mount.h"
 #include "setup_root.h"
 #include <unistd.h>
+std::string MycontainerConfig::root = "/opt/mydocker";
+std::string create_path(const std::string &root, const std::string &path) {
+    auto without_slash = path[0] == '/' ? path.substr(1) : path;
+    auto pathh = std::filesystem::path(root) / without_slash;
+    return pathh.string();
+}
+static void sigchld_handler(int sig) {
+    int status;
+    waitpid(-1, &status, WNOHANG);
+    std::string mnt = "mnt";
+    auto mountpoint = create_path(MycontainerConfig::root, mnt);
+//    for (auto &mount: mount_points) {
+//        auto mount_name = create_path(mountpoint, mount);
+//        std::cout << "umounting " << mount_name << std::endl;
+//        if (unmount_dir(mount_name) != 0) {
+//            std::cerr << "failed to umount " << mount_name << std::endl;
+//        }
+//    }
+    for (auto &mount: root_mount_points) {
+        auto mount_name = create_path(MycontainerConfig::root, mount);
+        std::cout << "umounting " << mount_name << std::endl;
+        if (unmount_dir(mount_name) != 0) {
+            std::cerr << "failed to umount " << mount_name << std::endl;
+        }
+    }
+}
 
 Mycontainer::Mycontainer(const std::string &dockerfile_path) {
     config = MycontainerConfig(dockerfile_path);
@@ -18,17 +44,11 @@ Mycontainer::Mycontainer(const std::string &dockerfile_path) {
 
 }
 
-std::vector<std::string> MycontainerConfig::root_mount_points = {"/usr", "/lib", "/bin", "/lib64", "/proc"};
 
-std::string create_path(const std::string &root, const std::string &path) {
-    auto without_slash = path[0] == '/' ? path.substr(1) : path;
-    auto pathh = std::filesystem::path(root) / without_slash;
-    return pathh.string();
-}
 
 void Mycontainer::mount_root() const {
     std::cout << config.root << std::endl;
-    for (auto &mount: MycontainerConfig::root_mount_points) {
+    for (auto &mount: root_mount_points) {
         auto mount_name = create_path(config.root, mount);
         std::cout << "mounting " << mount_name << std::endl;
         create_mountpoint(mount_name);
@@ -111,6 +131,7 @@ void Mycontainer::start() {
         case 0:
             break;
         default:
+            signal(SIGCHLD, sigchld_handler);
             if (close(config.pipefd_in[0]) != 0) {
                 std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_in[0] << std::endl;
             }
@@ -120,27 +141,8 @@ void Mycontainer::start() {
             if (close(config.pipefd_err[1]) != 0) {
                 std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_err[1] << std::endl;
             }
-
-            wait(&status);
-            std::cout << "exited with status " << (status >> 8) << std::endl;
-
-            std::string mnt = "mnt";
-            auto mountpoint = create_path(config.root, mnt);
-//            mount_root();
-            for (auto &mount: config.mount_points) {
-                auto mount_name = create_path(mountpoint, mount);
-                std::cout << "umounting " << mount_name << std::endl;
-                if (unmount_dir(mount_name) != 0) {
-                    std::cerr << "failed to umount " << mount_name << std::endl;
-                }
-            }
-            for (auto &mount: MycontainerConfig::root_mount_points) {
-                auto mount_name = create_path(config.root, mount);
-                std::cout << "umounting " << mount_name << std::endl;
-                if (unmount_dir(mount_name) != 0) {
-                    std::cerr << "failed to umount " << mount_name << std::endl;
-                }
-            }
+//            wait(&status);
+//            std::cout << "exited with status " << (status >> 8) << std::endl;
             break;
 
 
