@@ -76,7 +76,20 @@ public:
         for (const auto &item: pt.get_child("args")) {
             args.push_back(item.second.data());
         }
-    }
+            if (pipe(pipefd_out) == -1) {
+                perror("pipe out");
+                exit(EXIT_FAILURE);
+            }
+            if (pipe(pipefd_in) == -1) {
+                perror("pipe in");
+                exit(EXIT_FAILURE);
+            }
+            if (pipe(pipefd_err) == -1) {
+                perror("pipe err");
+                exit(EXIT_FAILURE);
+            }
+        }
+
 
     friend std::ostream &operator<<(std::ostream &output, const MycontainerConfig &config) {
         output << "container name: " << config.name << std::endl;

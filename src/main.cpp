@@ -4,37 +4,14 @@
 #include <iostream>
 #include "mydocker.h"
 #include "container_cfg.h"
+#include <boost/algorithm/string.hpp>
 
 int main(int argc, char **argv) {
-//    if (argc != 3) {
-//        std::cerr << "Usage: " << argv[0] << " <new_root> <executable>" << std::endl;
-//        return 1;
-//    }
-//    std::vector<char *> args;
-//    std::string arg1 = argv[2];
-//    args.push_back(arg1.data());
-//    args.push_back(nullptr);
-//    std::vector<std::string> mounts;
-//    mounts.emplace_back("/tmp");
-//    std::string new_root = argv[1];
-//    Mydocker mydocker;
-//    auto cfg = MycontainerConfig(mounts, new_root, CLONE_NEWNS);
-//    mydocker.create(arg1, args,cfg);
-//    mydocker.run(0);
-//    ContainerCfg cfg(argv[1]);
-//    std::cout << cfg.name << std::endl;
-//    std::for_each(cfg.args.begin(), cfg.args.end(), [](std::string &s) { std::cout << s << std::endl; });
-//    std::cout<<cfg.root<<std::endl;
-//    std::cout<<cfg.pids_limit<<std::endl;
-//    std::cout<<cfg.cpu_proportion<<std::endl;
-//    std::cout<<cfg.memory_limit_mb<<std::endl;
-//    std::for_each(cfg.mount_points.begin(), cfg.mount_points.end(), [](std::string &s) { std::cout << s << std::endl; });
     if (argc != 2) {
         std::cerr << "Usage: " << argv[0] << " <port>" << std::endl;
         return 1;
     }
     Mydocker mydocker;
-
     struct sockaddr_in server;
     char buf[1024];
     int sd;
@@ -59,8 +36,11 @@ int main(int argc, char **argv) {
             exit(EXIT_SUCCESS);
         }
         buf[cc] = '\0';
-        printf("message received: %s\n", buf);
-        writen(mydocker.psd, "accepted", sizeof("accepted"));
+        std::string command(buf);
+        boost::trim(command);
+        std::vector<std::string> command_args;
+        boost::split(command_args, command, boost::is_any_of(" "));
+        mydocker.execute_command(command_args);
     }
     return 0;
 }

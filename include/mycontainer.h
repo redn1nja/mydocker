@@ -24,13 +24,14 @@ public:
 
     Mycontainer() = delete;
 
-    Mycontainer(std::string name,
-                std::vector<char *> args,
-                MycontainerConfig config) :
-            name(std::move(name)),
-            args(std::move(args)),
+    Mycontainer(MycontainerConfig config) :
+            name(config.name),
             config(std::move(config)),
-            is_running(false) {}
+            is_running(false) {
+        for (const auto& arg: this->config.args) {
+            this->args.push_back(const_cast<char*>(arg.c_str()));
+        }
+    }
     explicit Mycontainer(const std::string &dockerfile_path);
     Mycontainer &operator=(const Mycontainer &other) = default;
     Mycontainer(const Mycontainer &other) = default;
