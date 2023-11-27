@@ -21,14 +21,15 @@ int main(int argc, char **argv) {
 //    auto cfg = MycontainerConfig(mounts, new_root, CLONE_NEWNS);
 //    mydocker.create(arg1, args,cfg);
 //    mydocker.run(0);
-    ContainerCfg cfg(argv[1]);
+    MycontainerConfig cfg(argv[1]);
     std::cout << cfg.name << std::endl;
     std::for_each(cfg.args.begin(), cfg.args.end(), [](std::string &s) { std::cout << s << std::endl; });
-    std::cout<<cfg.root<<std::endl;
-    std::cout<<cfg.pids_limit<<std::endl;
-    std::cout<<cfg.cpu_proportion<<std::endl;
-    std::cout<<cfg.memory_limit_mb<<std::endl;
-    std::for_each(cfg.mount_points.begin(), cfg.mount_points.end(), [](std::string &s) { std::cout << s << std::endl; });
+    std::cout << cfg.root << std::endl;
+    std::cout << cfg.pids_limit << std::endl;
+    std::cout << cfg.cpu_proportion << std::endl;
+    std::cout << cfg.memory_limit_mb << std::endl;
+    std::for_each(cfg.mount_points.begin(), cfg.mount_points.end(),
+                  [](std::string &s) { std::cout << s << std::endl; });
 
-return 0;
+    return 0;
 }
