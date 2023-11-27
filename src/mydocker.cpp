@@ -30,13 +30,16 @@ void Mydocker::listen(size_t index) {
         dup2(containers[index]->getConfig().pipefd_err[0], STDERR_FILENO);
 
         if (close(containers[index]->getConfig().pipefd_in[1]) != 0) {
-            std::cerr << "listen Mydocker: cannot close file descriptor " << containers[index]->getConfig().pipefd_in[1] << std::endl;
+            std::cerr << "listen Mydocker: cannot close file descriptor " << containers[index]->getConfig().pipefd_in[1]
+                      << std::endl;
         }
         if (close(containers[index]->getConfig().pipefd_out[0]) != 0) {
-            std::cerr << "listen Mydocker: cannot close file descriptor " << containers[index]->getConfig().pipefd_out[0] << std::endl;
+            std::cerr << "listen Mydocker: cannot close file descriptor "
+                      << containers[index]->getConfig().pipefd_out[0] << std::endl;
         }
         if (close(containers[index]->getConfig().pipefd_err[0]) != 0) {
-            std::cerr << "listen Mydocker: cannot close file descriptor " << containers[index]->getConfig().pipefd_err[0] << std::endl;
+            std::cerr << "listen Mydocker: cannot close file descriptor "
+                      << containers[index]->getConfig().pipefd_err[0] << std::endl;
         }
     }
 }
@@ -46,7 +49,7 @@ void Mydocker::detach() {
 }
 
 void Mydocker::list_containers() {
-    for(size_t i = 0; i < containers.size(); ++i){
+    for (size_t i = 0; i < containers.size(); ++i) {
         std::cout << "Container " << i << std::endl;
         std::cout << containers[i]->getConfig() << std::endl;
     }

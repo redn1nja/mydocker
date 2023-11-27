@@ -12,6 +12,12 @@
 #include "setup_root.h"
 #include <unistd.h>
 
+Mycontainer::Mycontainer(const std::string &dockerfile_path) {
+    config = MycontainerConfig(dockerfile_path);
+    name = config.name;
+
+}
+
 std::vector<std::string> MycontainerConfig::root_mount_points = {"/usr", "/lib", "/bin", "/lib64", "/proc"};
 
 std::string create_path(const std::string &root, const std::string &path) {
@@ -41,7 +47,7 @@ int Mycontainer::child_func(void *arg) {
 }
 
 
-void Mycontainer::run(){
+void Mycontainer::run() {
     if (close(config.pipefd_in[1]) != 0) {
         std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_in[1] << std::endl;
     }
@@ -95,8 +101,10 @@ void Mycontainer::run(){
     }
 }
 
+
 void Mycontainer::start() {
-    switch (pid = create_process_in_new_ns(&Mycontainer::child_func, STACK_SIZE,  config.namespace_flags | SIGCHLD,  this)){
+    switch (pid = create_process_in_new_ns(&Mycontainer::child_func, STACK_SIZE, config.namespace_flags | SIGCHLD,
+                                           this)) {
         case -1:
             std::cerr << "failed to create container" << std::endl;
             exit(EXIT_FAILURE);
