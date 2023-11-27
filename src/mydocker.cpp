@@ -44,3 +44,10 @@ void Mydocker::listen(size_t index) {
 void Mydocker::detach() {
     // socket stuff
 }
+
+void Mydocker::list_containers() {
+    for(size_t i = 0; i < containers.size(); ++i){
+        std::cout << "Container " << i << std::endl;
+        std::cout << containers[i]->getConfig() << std::endl;
+    }
+}
