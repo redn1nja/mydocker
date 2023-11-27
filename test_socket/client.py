@@ -11,7 +11,7 @@ def run_client(server_ip, server_port):
     try:
         while True:
             # somehow integrate our CLI here
-            msg = input("Enter message: ")
+            msg = input("mydocker >>> ")
             msg = msg + "\n"
             client.send(msg.encode("utf-8")[:1024])
 
