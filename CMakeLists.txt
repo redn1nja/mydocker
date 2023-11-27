@@ -13,6 +13,7 @@ add_executable(${PROJECT_NAME} src/main.cpp
         test_chroot/setup_root.cpp test_chroot/setup_root.h
         test_cgroups/cgroups.h test_cgroups/cgroups.cpp
         test_mount_volumes/bind_mount.h test_mount_volumes/bind_mount.cpp
+        include/container_cfg.h
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE include)
