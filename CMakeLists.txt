@@ -26,6 +26,8 @@ add_executable(volumes test_mount_volumes/bind_mount.h test_mount_volumes/bind_m
 add_executable(namespaces test_create_namespace/create_namespace.cpp test_create_namespace/create_namespace.h test_create_namespace/main.cpp)
 add_executable(change_root test_chroot/setup_root.cpp test_chroot/setup_root.h test_chroot/main.cpp)
 add_executable(cgroups test_cgroups/cgroups.h test_cgroups/cgroups.cpp test_cgroups/main.cpp)
+add_executable(socket test_socket/main.cpp)
+
 
 
 INSTALL(PROGRAMS
@@ -52,3 +54,6 @@ INSTALL(PROGRAMS
         $<TARGET_FILE:change_root>
         DESTINATION bin)
 
+INSTALL(PROGRAMS
+        $<TARGET_FILE:socket>
+        DESTINATION bin)
