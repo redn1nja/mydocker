@@ -3,7 +3,7 @@
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
-
+#include <sched.h>
 #ifndef MYDOCKER_CONTAINER_CFG_H
 #define MYDOCKER_CONTAINER_CFG_H
 
@@ -27,7 +27,7 @@ public:
     int pipefd_out[2];
     int pipefd_in[2];
     int pipefd_err[2];
-    int namespace_flags;
+    int namespace_flags = 0;
     std::string cgroup_name;
     size_t memory_limit_mb = 100; // actually random values
     size_t pids_limit = 10;
@@ -46,12 +46,12 @@ public:
             mount_points(std::move(mount_points)),
             namespace_flags(namespaces_flags)
     {
-        if (pipe(pipefd_out) == -1) {
-            perror("pipe out");
-            exit(EXIT_FAILURE);
-        }
         if (pipe(pipefd_in) == -1) {
             perror("pipe in");
+            exit(EXIT_FAILURE);
+        }
+        if (pipe(pipefd_out) == -1) {
+            perror("pipe out");
             exit(EXIT_FAILURE);
         }
         if (pipe(pipefd_err) == -1) {
@@ -62,7 +62,21 @@ public:
 
     explicit MycontainerConfig(const std::string &dockerfile_path) {
         boost::property_tree::ptree pt;
-        boost::property_tree::read_json(dockerfile_path, pt);
+        try {
+            boost::property_tree::read_json(dockerfile_path, pt);
+        }
+        catch (boost::property_tree::json_parser_error &e) {
+            std::cerr << "Failed to parse dockerfile: " << e.what() << std::endl;
+//            exit(EXIT_FAILURE);
+        }
+        catch (std::exception &e) {
+            std::cerr << "Failed to parse dockerfile: " << e.what() << std::endl;
+//            exit(EXIT_FAILURE);
+        }
+        catch (...) {
+            std::cerr << "Failed to parse dockerfile" << std::endl;
+//            exit(EXIT_FAILURE);
+        }
         name = pt.get<std::string>("bin");
         args.emplace_back(name);
         root = pt.get<std::string>("root", "/opt/mydocker/docker_root");
@@ -76,12 +90,12 @@ public:
         for (const auto &item: pt.get_child("args")) {
             args.push_back(item.second.data());
         }
-            if (pipe(pipefd_out) == -1) {
-                perror("pipe out");
-                exit(EXIT_FAILURE);
-            }
             if (pipe(pipefd_in) == -1) {
                 perror("pipe in");
+                exit(EXIT_FAILURE);
+            }
+            if (pipe(pipefd_out) == -1) {
+                perror("pipe out");
                 exit(EXIT_FAILURE);
             }
             if (pipe(pipefd_err) == -1) {

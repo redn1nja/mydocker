@@ -47,9 +47,9 @@ Mycontainer::Mycontainer(const std::string &dockerfile_path) {
 
 
 void Mycontainer::mount_root() const {
-    std::cout << config.root << std::endl;
+    std::cout << MycontainerConfig::root << std::endl;
     for (auto &mount: root_mount_points) {
-        auto mount_name = create_path(config.root, mount);
+        auto mount_name = create_path(MycontainerConfig::root, mount);
         std::cout << "mounting " << mount_name << std::endl;
         create_mountpoint(mount_name);
         if (mount_dir(mount, mount_name) != 0) {
@@ -68,38 +68,42 @@ int Mycontainer::child_func(void *arg) {
 
 
 void Mycontainer::run() {
-    if (close(config.pipefd_in[1]) != 0) {
-        std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_in[1] << std::endl;
+//    if (close(config.pipefd_in[1]) != 0) {
+//        std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_in[1] << std::endl;
+//    }
+//    if (close(config.pipefd_out[0]) != 0) {
+//        std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_out[0] << std::endl;
+//    }
+//    if (close(config.pipefd_err[0]) != 0) {
+//        std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_err[0] << std::endl;
+//    }
+//    if (close(config.pipefd_in[0]) != 0) {
+//        std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_in[0] << std::endl;
+//    }
+//    if (close(config.pipefd_out[1]) != 0) {
+//        std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_out[1] << std::endl;
+//    }
+//    if (close(config.pipefd_err[1]) != 0) {
+//        std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_err[1] << std::endl;
+//    }
+//
+//    std::cout << pid << std::endl;
+    if (dup2(config.pipefd_in[0], STDIN_FILENO)!=0) {
+        dprintf(fd, "start Mycontainer: cannot dup2 STDIN_FILENO %s \n", strerror(errno));
     }
-    if (close(config.pipefd_out[0]) != 0) {
-        std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_out[0] << std::endl;
+    if (dup2(config.pipefd_out[1], STDOUT_FILENO)!=0) {
+        dprintf(fd, "start Mycontainer: cannot dup2 STDOUT_FILENO %s \n", strerror(errno));
     }
-    if (close(config.pipefd_err[0]) != 0) {
-        std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_err[0] << std::endl;
+    if(dup2(config.pipefd_err[1], STDERR_FILENO)!=0) {
+        dprintf(fd, "start Mycontainer: cannot dup2 STDERR_FILENO %s \n", strerror(errno));
     }
-
-    dup2(config.pipefd_in[0], STDIN_FILENO);
-    dup2(config.pipefd_out[1], STDOUT_FILENO);
-    dup2(config.pipefd_err[1], STDERR_FILENO);
-
-    if (close(config.pipefd_in[0]) != 0) {
-        std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_in[0] << std::endl;
-    }
-    if (close(config.pipefd_out[1]) != 0) {
-        std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_out[1] << std::endl;
-    }
-    if (close(config.pipefd_err[1]) != 0) {
-        std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_err[1] << std::endl;
-    }
-
-    std::cout << pid << std::endl;
     std::cout << "running" << std::endl;
     create_cgroup("test");
     set_pids_limit("test", 10);
     set_memory_limit_mb("test", 100);
     set_cpu_limit("test", 5);
     std::string mnt = "mnt";
-    auto mountpoint = create_path(config.root, mnt);
+    auto mountpoint = create_path(MycontainerConfig::root, mnt);
     mount_root();
     std::cout << mountpoint << std::endl;
     create_mountpoint(mountpoint);
@@ -112,9 +116,10 @@ void Mycontainer::run() {
             std::cerr << "failed to mount " << mount_name << std::endl;
         }
     }
-    if (setup_root(config.root.c_str()) != 0) {
+    if (setup_root(MycontainerConfig::root.c_str()) != 0) {
         std::cerr << "failed to chroot" << std::endl;
     }
+//    std::cout<<"executing"<<std::endl;
     if (execvp(name.c_str(), args.data()) != 0) {
         std::cerr << "failed to run" << std::endl;
         exit(EXIT_FAILURE);
@@ -123,6 +128,9 @@ void Mycontainer::run() {
 
 
 void Mycontainer::start() {
+    config.set_err(dup(STDERR_FILENO));
+    config.set_in(dup(STDIN_FILENO));
+    config.set_out(dup(STDOUT_FILENO));
     switch (pid = create_process_in_new_ns(&Mycontainer::child_func, STACK_SIZE, config.namespace_flags | SIGCHLD,
                                            this)) {
         case -1:
@@ -131,16 +139,16 @@ void Mycontainer::start() {
         case 0:
             break;
         default:
-            signal(SIGCHLD, sigchld_handler);
-            if (close(config.pipefd_in[0]) != 0) {
-                std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_in[0] << std::endl;
-            }
-            if (close(config.pipefd_out[1]) != 0) {
-                std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_out[1] << std::endl;
-            }
-            if (close(config.pipefd_err[1]) != 0) {
-                std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_err[1] << std::endl;
-            }
+//            signal(SIGCHLD, sigchld_handler);
+//            if (close(config.pipefd_in[0]) != 0) {
+//                std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_in[0] << std::endl;
+//            }
+//            if (close(config.pipefd_out[1]) != 0) {
+//                std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_out[1] << std::endl;
+//            }
+//            if (close(config.pipefd_err[1]) != 0) {
+//                std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_err[1] << std::endl;
+//            }
 //            wait(&status);
 //            std::cout << "exited with status " << (status >> 8) << std::endl;
             break;

@@ -5,6 +5,9 @@
 #include "mydocker.h"
 #include "container_cfg.h"
 #include <boost/algorithm/string.hpp>
+#include <fcntl.h>
+
+int fd = open("/tmp/mydocker.log", O_WRONLY | O_CREAT | O_TRUNC, 0644);
 
 int main(int argc, char **argv) {
     if (argc != 2) {

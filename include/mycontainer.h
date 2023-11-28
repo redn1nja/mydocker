@@ -10,7 +10,7 @@
 #include <csignal>
 #include <iostream>
 #include <container_cfg.h>
-
+extern int fd;
 class Mycontainer {
 private:
     std::string name;

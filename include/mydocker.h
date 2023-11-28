@@ -12,7 +12,7 @@
 #include <iostream>
 #include <unordered_map>
 #include "socket_functions.h"
-
+extern int fd;
 enum commands {
     CREATE,
     RUN,
