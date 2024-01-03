@@ -39,12 +39,15 @@ static void sigchld_handler(int sig) {
 }
 
 Mycontainer::Mycontainer(const std::string &dockerfile_path) {
-    config = MycontainerConfig(dockerfile_path);
-    name = config.name;
-
+    if(!std::filesystem::exists(dockerfile_path)){
+        std::cerr << dockerfile_path << ": no such file or directory" << std::endl;
+    }else if(std::filesystem::path(dockerfile_path).extension() != ".json"){
+        std::cerr << dockerfile_path << ": not a json file" << std::endl;
+    }else{
+        config = MycontainerConfig(dockerfile_path);
+        name = config.name;
+    }
 }
-
-
 
 void Mycontainer::mount_root() const {
     std::cout << MycontainerConfig::root << std::endl;
