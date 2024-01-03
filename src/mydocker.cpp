@@ -34,9 +34,9 @@ void Mydocker::listen(size_t index) {
         containers[index]->getConfig().set_err(err);
 //        std::cout<< "old in " << in << " old out " << out << " old err " << err << std::endl;
         std::cout << "in: " << containers[index]->getConfig().pipefd_in[1] << " out: " << containers[index]->getConfig().pipefd_out[0]<< " err: " << containers[index]->getConfig().pipefd_err[0] << std::endl;
-        dup2(STDIN_FILENO, containers[index]->getConfig().pipefd_in[0]);
-        dup2(STDOUT_FILENO, containers[index]->getConfig().pipefd_out[1]);
-        dup2(STDERR_FILENO, containers[index]->getConfig().pipefd_err[1]);
+        dup2(STDIN_FILENO, containers[index]->getConfig().pipefd_in[1]);
+        dup2(STDOUT_FILENO, containers[index]->getConfig().pipefd_out[0]);
+        dup2(STDERR_FILENO, containers[index]->getConfig().pipefd_err[0]);
         std::cout<< "hello from mydocker" << std::endl;
 //        dup2(containers[index]->getConfig().pipefd_out[0], STDOUT_FILENO);
 //        dup2(containers[index]->getConfig().pipefd_err[0], STDERR_FILENO);
