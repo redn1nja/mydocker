@@ -1,0 +1,49 @@
+
+#ifndef MYDOCKER_MOUNT_NAMESPACES_H
+#define MYDOCKER_MOUNT_NAMESPACES_H
+
+#include <utility>
+#include <iostream>
+#include <cstring>
+#include <functional>
+
+constexpr std::string_view put_old = "/oldrootfs";
+constexpr std::string_view loop_path = "/dev/loop";
+constexpr size_t STACK_SIZE = 1024*1024;
+
+template <bool throws, class T, class ...Args>
+class syscall_wrap{
+    std::function<T(Args...)> sys;
+
+public:
+    explicit syscall_wrap(T syscall (Args...)) : sys(syscall) {}
+
+    T operator() (Args...args){
+        T res (sys(args...));
+        int error_code = errno;
+        if (error_code){
+            if (throws) {
+                std::string error = strerror(errno);
+                throw std::logic_error("syscall failed: " + error);
+            }
+            else{
+                std::cerr << strerror(errno);
+            }
+        }
+        return res;
+    }
+};
+
+template<typename T, bool throws, typename... Args>
+syscall_wrap<throws, T, Args...> make_wrapper (T syscall (Args...))
+{
+    return syscall_wrap<throws, T, Args...> (syscall);
+}
+
+int pivot_root(const char *new_root, const char *put_olds);
+int mount_namespace(void *arg);
+int create_loop(const std::string& image, const std::string& mount_point);
+
+
+
+#endif //MYDOCKER_MOUNT_NAMESPACES_H
