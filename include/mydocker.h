@@ -11,7 +11,9 @@
 #include "signal.h"
 #include <iostream>
 #include <unordered_map>
+#include <filesystem>
 #include "socket_functions.h"
+
 extern int fd;
 enum commands {
     CREATE,
@@ -48,10 +50,17 @@ public:
     Mydocker &operator=(const Mydocker &other) = delete;
     Mydocker(const Mydocker &other) = delete;
     void run(size_t index) { containers[index]->start(); }
-    template<class... Args>
-    void create(Args &&...args) {
-        containers.push_back(std::make_unique<Mycontainer>(std::forward<Args>(args)...));
-        writen(psd, "mydocker: container created", sizeof ("mydocker: container created"));
+    void create(const std::string &dockerfile_path) {
+        if(!std::filesystem::exists(dockerfile_path)){
+            std::string error_msg = "mydocker: failed to create container\n" + dockerfile_path + ": no such file or directory";
+            writen(psd, error_msg.c_str(), error_msg.size());
+        }else if(std::filesystem::path(dockerfile_path).extension() != ".json"){
+            std::string error_msg = "mydocker: failed to create container\n" + dockerfile_path + ": not a json file";
+            writen(psd, error_msg.c_str(), error_msg.size());
+        }else{
+            containers.push_back(std::make_unique<Mycontainer>(dockerfile_path));
+            writen(psd, "mydocker: container created", sizeof ("mydocker: container created"));
+        }
     }
     void list_containers();
     void stop(size_t index);

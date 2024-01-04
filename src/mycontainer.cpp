@@ -41,10 +41,7 @@ static void sigchld_handler(int sig) {
 Mycontainer::Mycontainer(const std::string &dockerfile_path) {
     config = MycontainerConfig(dockerfile_path);
     name = config.name;
-
 }
-
-
 
 void Mycontainer::mount_root() const {
     std::cout << MycontainerConfig::root << std::endl;
