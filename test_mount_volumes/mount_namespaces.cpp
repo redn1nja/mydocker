@@ -18,10 +18,12 @@ int pivot_root(const char *new_root, const char *put_olds) {
 int mount_namespace(void *arg) {
     auto **args = reinterpret_cast<char**>(arg);
     std::string new_root = args[0];
+    unshare(CLONE_NEWNS);
     std::string image_path = IMAGE_PATH;
-    auto fd = create_loop(image_path, new_root.data());
+
     make_wrapper<int, true>(&mount)(NULL, "/", NULL, MS_REC | MS_PRIVATE, NULL);
-    make_wrapper<int, true>(&mount)(new_root.data(), new_root.data(), NULL, MS_BIND, NULL);
+//    make_wrapper<int, true>(&mount)(new_root.data(), new_root.data(), NULL, MS_BIND, NULL);
+    auto fd = create_loop(image_path, new_root.data());
     std::string path = new_root + put_old.data();
     make_wrapper<int, true>(&mkdir)(path.data(), 0777);;
 
@@ -46,6 +48,6 @@ int create_loop(const std::string& image, const std::string& mountpoint){
     loopfd = open(loop_name.data(), O_RDWR);
     backingfile = open(image.data(), O_RDWR);
     ioctl(loopfd, LOOP_SET_FD, backingfile);
-    make_wrapper<int, false>(&mount)(loop_name.c_str(), mountpoint.data(), "ext4", MS_SYNCHRONOUS, NULL);
+    make_wrapper<int, true>(&mount)(loop_name.c_str(), mountpoint.data(), "ext4", 0, NULL);
     return loopfd;
 }
