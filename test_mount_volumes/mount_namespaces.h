@@ -6,6 +6,7 @@
 #include <iostream>
 #include <cstring>
 #include <functional>
+#include <sstream>
 
 constexpr std::string_view put_old = "/oldrootfs";
 constexpr std::string_view loop_path = "/dev/loop";
@@ -24,10 +25,12 @@ public:
         if (error_code){
             if (throws) {
                 std::string error = strerror(errno);
-                throw std::logic_error("syscall failed: " + error);
+                std::cerr<<strerror(errno);
+                ((std::cerr << " , " << std::forward<Args>(args)), ...);
             }
             else{
-                std::cerr << strerror(errno);
+                std::cerr<<strerror(errno);
+                ((std::cerr << " , " << std::forward<Args>(args)), ...);
             }
         }
         return res;
@@ -41,8 +44,9 @@ syscall_wrap<throws, T, Args...> make_wrapper (T syscall (Args...))
 }
 
 int pivot_root(const char *new_root, const char *put_olds);
-int mount_namespace(void *arg);
-int create_loop(const std::string& image, const std::string& mount_point);
+int mount_namespace_child (void* arg);
+int mount_namespace(std::string_view mount_point, char** exec_params);
+int create_loop(std::string_view image, std::string_view mountpoint);
 
 
 

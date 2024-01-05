@@ -7,7 +7,7 @@
 #include <sys/ioctl.h>
 
 int main(int argc, char *argv[]) {
-    if (argc != 3){
+    if (argc < 3){
         std::cerr<<"usage: "<<argv[0]<<" <new_root> <executable>\n";
         return EXIT_FAILURE;
     }
@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
     stack = static_cast<char*>(make_wrapper<void*, true>(&mmap)(nullptr, STACK_SIZE, PROT_READ | PROT_WRITE,
                                                                 MAP_PRIVATE | MAP_ANONYMOUS | MAP_STACK, -1, 0));
 
-    if (clone(mount_namespace, stack + STACK_SIZE, CLONE_NEWNS | SIGCHLD, &argv[1]) == -1)
+    if (clone(mount_namespace_child, stack + STACK_SIZE, CLONE_NEWNS | SIGCHLD, &argv[1]) == -1)
         err(EXIT_FAILURE, "clone");
     make_wrapper<int, true>(&wait)(nullptr);
     return EXIT_SUCCESS;

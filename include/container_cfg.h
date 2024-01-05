@@ -27,7 +27,7 @@ public:
     int pipefd_out[2];
     int pipefd_in[2];
     int pipefd_err[2];
-    int namespace_flags = 0;
+    int namespace_flags = CLONE_NEWNS;
     std::string cgroup_name;
     size_t memory_limit_mb = 100; // actually random values
     size_t pids_limit = 10;

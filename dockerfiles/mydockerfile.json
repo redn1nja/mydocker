@@ -1,6 +1,6 @@
 {
-  "bin" : "/bin/bash",
-  "args" : [ "-c", "echo hello" ],
+  "bin" : "/bin/sh",
+  "args" : [],
   "mount_points" : ["/tmp"],
   "mem_limit": 200,
   "pids_limit": 20

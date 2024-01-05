@@ -15,6 +15,8 @@ add_executable(${PROJECT_NAME} src/main.cpp
         test_mount_volumes/bind_mount.h test_mount_volumes/bind_mount.cpp
         include/container_cfg.h
         test_socket/socket_functions.cpp test_socket/socket_functions.h
+        test_mount_volumes/mount_namespaces.cpp
+        test_mount_volumes/mount_namespaces.h
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE include)
@@ -38,6 +40,7 @@ add_executable(mount_namespace test_mount_volumes/mount_namespaces.cpp
         test_mount_volumes/mount_namespaces.h
         test_mount_volumes/main_ns.cpp)
 target_compile_definitions(mount_namespace PUBLIC IMAGE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/rootfs.img")
+target_compile_definitions(${PROJECT_NAME} PUBLIC IMAGE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/rootfs.img")
 
 INSTALL(PROGRAMS
         $<TARGET_FILE:mount_namespace>

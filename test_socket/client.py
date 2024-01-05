@@ -1,8 +1,8 @@
 import socket
 
-import keyboard
+#import keyboard
 
-keyboard.add_hotkey("ctrl + shift + p", lambda: print("Hello World!"))
+#keyboard.add_hotkey("ctrl + shift + p", lambda: print("Hello World!"))
 
 def run_client(server_ip, server_port):
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
