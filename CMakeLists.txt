@@ -33,6 +33,10 @@ add_executable(cgroups test_cgroups/cgroups.h test_cgroups/cgroups.cpp test_cgro
 add_executable(socket test_socket/main.cpp
         test_socket/socket_functions.cpp
         test_socket/socket_functions.h)
+add_executable(pipes test_pipes/main.cpp test_socket/socket_functions.h test_socket/socket_functions.cpp)
+
+target_include_directories(pipes PRIVATE test_socket)
+
 
 
 

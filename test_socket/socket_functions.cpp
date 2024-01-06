@@ -73,3 +73,21 @@ void create_server(int port, int &psd) {
         writen(psd, "accepted", sizeof("accepted"));
     }
 }
+
+int cat(int fd, char *buffer, size_t size) {
+    while (true) {
+        ssize_t read_now = read(fd, buffer, 8);
+        if (read_now == -1) {
+            if (errno == EINTR)
+                continue;
+            else {
+                return -1;
+            }
+        } else if (read_now == 0) {
+            break;
+        } else {
+            writen(1, buffer, read_now);
+        }
+    }
+    return 0;
+}

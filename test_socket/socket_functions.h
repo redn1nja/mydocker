@@ -16,5 +16,6 @@
 ssize_t readn(int fd , void *buffer, size_t n);
 ssize_t writen(int fd , const void *buffer , size_t n);
 void create_server(int port, int &psd);
+int cat(int fd, char *buffer, size_t size);
 
 #endif //MYDOCKER_SOCKET_FUNCTIONS_H
