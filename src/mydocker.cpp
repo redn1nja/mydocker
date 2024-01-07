@@ -48,6 +48,7 @@ void Mydocker::kill_container(size_t index) {
         writen(psd, "Failed to kill container\n", strlen("Failed to kill container\n"));
         return;
     }
+    containers.erase(containers.begin()+static_cast<long>(index));
     std::string kill_msg = "killed: " + std::to_string(containers[index]->getPID());
     writen(psd, kill_msg.data(), kill_msg.size());
 }
@@ -80,10 +81,6 @@ void Mydocker::listen(size_t index) {
             std::getline(std::cin, userInput);
             userInput += "\n";  // Add newline to simulate pressing Enter
             write(containers[index]->get_sockfd()[1], userInput.c_str(), userInput.size());
-
-
-//            std::cout.write(buffer, bytesRead);
-
         }
 
     }
