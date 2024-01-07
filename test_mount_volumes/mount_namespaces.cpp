@@ -20,15 +20,16 @@ int mount_namespace_child(void* arg){
     auto **args = reinterpret_cast<char**>(arg);
     std::string_view new_root = args[0];
     char ** exec = &args[1];
-    mount_namespace(new_root, exec, {});
+    std::string image = IMAGE_PATH;
+    mount_namespace(new_root, exec, {}, image);
     return 0;
 }
 
-int mount_namespace(std::string_view new_root, char ** exec, const std::vector<std::string>& mounts) {
+int mount_namespace(std::string_view new_root, char ** exec, const std::vector<std::string>& mounts, const std::string& image) {
 
-    std::string image_path = IMAGE_PATH;
+
     make_wrapper<int, true>(&mount)(NULL, "/", NULL, MS_REC | MS_PRIVATE, NULL);
-    auto fd = create_loop(image_path, new_root);
+    auto fd = create_loop(image, new_root);
     std::string path = std::string(new_root) + put_old.data();
     std::string mount_place = std::string(new_root) + mount_point.data();
     std::cout<< mount_place << std::endl;

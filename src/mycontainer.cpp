@@ -58,7 +58,10 @@ void Mycontainer::run() {
     set_pids_limit("test", config.pids_limit);
     set_memory_limit_mb("test", config.memory_limit_mb);
     set_cpu_limit("test", config.cpu_proportion);
-    mount_namespace(root_dir, args.data(), config.mount_points);
+    std::string image_path = IMAGE_PATH;
+    std::string copy_path = root_dir + "/rootfs.img";
+    std::filesystem::copy(image_path, copy_path, std::filesystem::copy_options::skip_existing);
+    mount_namespace(root_dir, args.data(), config.mount_points, copy_path);
 
     //TODO do run stuff
 
