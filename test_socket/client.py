@@ -2,11 +2,10 @@ import socket
 
 import keyboard
 
-keyboard.add_hotkey("ctrl + shift + p", lambda: print("Hello World!"))
-
 def run_client(server_ip, server_port):
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect((server_ip, server_port))
+    keyboard.add_hotkey("ctrl + shift + p", lambda: client.send(b"detach\n"))
 
     try:
         while True:

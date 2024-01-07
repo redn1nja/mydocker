@@ -34,9 +34,10 @@ add_executable(socket test_socket/main.cpp
         test_socket/socket_functions.cpp
         test_socket/socket_functions.h)
 add_executable(pipes test_pipes/main.cpp test_socket/socket_functions.h test_socket/socket_functions.cpp)
+add_executable(redirection test_redirections/main.cpp test_socket/socket_functions.h test_socket/socket_functions.cpp)
 
 target_include_directories(pipes PRIVATE test_socket)
-
+target_include_directories(redirection PRIVATE test_socket)
 
 
 

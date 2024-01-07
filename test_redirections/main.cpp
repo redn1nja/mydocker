@@ -1,12 +1,44 @@
+//
+// Created by sofiiafolv on 1/7/24.
+//
+
 #include <iostream>
+#include <boost/algorithm/string.hpp>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include "socket_functions.h"
 #include <cstring>
 #include <unistd.h>
-#include <sys/socket.h>
-#include "wait.h"
-#include "socket_functions.h"
+#include <sys/types.h>
 #include <fcntl.h>
+#include "wait.h"
 
 int main() {
+    struct sockaddr_in server;
+    char buf[1024];
+    int sd, psd;
+    if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+        std::cerr << "mydocker: failed to create socket" << std::endl;
+    }
+    memset(&server, 0, sizeof(server));
+    server.sin_family = AF_INET;
+    server.sin_addr.s_addr = htonl(INADDR_ANY);
+    server.sin_port = htons(8000);
+    int res = bind(sd, (struct sockaddr *) &server, sizeof(server));
+    if (res == -1) {
+        std::cerr << "mydocker: failed to bind socket" << std::endl;
+    }
+    listen(sd, 1);
+    psd = accept(sd, nullptr, nullptr);
+    close(sd);
+//    for (;;) {
+//        int cc = readn(psd, buf, sizeof(buf));
+//        if (cc == 0) {
+//            writen(psd, "closed", sizeof("closed"));
+//            exit(EXIT_SUCCESS);
+//        }
+//        buf[cc] = '\0';
+//    }
     int sockfd[2];
     char buffer[8];
 
@@ -55,19 +87,28 @@ int main() {
             return EXIT_FAILURE;
         }
         while (true) {
-            ssize_t bytesRead = cat(sockfd[1], buffer, sizeof(buffer), STDOUT_FILENO);
+            ssize_t bytesRead = cat(sockfd[1], buffer, sizeof(buffer), psd);
+            std::string command(buffer, bytesRead);
+            std::cout << command << std::endl;
+            if (boost::algorithm::trim_copy(command) == "shutdown") {
+                // Shutdown logic
+                close(sockfd[1]);
+                break;  // Exit the loop and close the socket
+            }
+
+            // Handle other commands if needed
 
 //            if (bytesRead <= 0) {
 //                // If read returns 0 or negative value, it indicates EOF or an error.
 //                break;
 //            }
-            // Get user input for the command
+//            // Get user input for the command
 //            std::string userInput;
-////            std::cout << "Enter command: ";
+//            std::cout << "Enter command: ";
 //            std::getline(std::cin, userInput);
 //            userInput += "\n";  // Add newline to simulate pressing Enter
-
-            // Send the command to Program B via the socket
+//
+//            // Send the command to Program B via the socket
 //            write(sockfd[1], userInput.c_str(), userInput.size());
 //            std::cout.write(buffer, bytesRead);
 
