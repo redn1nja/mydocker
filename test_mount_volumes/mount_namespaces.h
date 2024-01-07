@@ -11,6 +11,7 @@
 constexpr std::string_view put_old = "/oldrootfs";
 constexpr std::string_view loop_path = "/dev/loop";
 constexpr size_t STACK_SIZE = 1024*1024;
+constexpr std::string_view mount_point = "/mnt";
 
 template <bool throws, class T, class ...Args>
 class syscall_wrap{
@@ -45,7 +46,7 @@ syscall_wrap<throws, T, Args...> make_wrapper (T syscall (Args...))
 
 int pivot_root(const char *new_root, const char *put_olds);
 int mount_namespace_child (void* arg);
-int mount_namespace(std::string_view mount_point, char** exec_params);
+int mount_namespace(std::string_view mount_point, char** exec_params, const std::vector<std::string>& mounts);
 int create_loop(std::string_view image, std::string_view mountpoint);
 
 

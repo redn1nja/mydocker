@@ -10,6 +10,7 @@
 #include <csignal>
 #include <iostream>
 #include <container_cfg.h>
+#include <filesystem>
 
 extern int fd;
 
@@ -21,6 +22,8 @@ private:
     int status = -1;
     MycontainerConfig config;
     bool is_running = false;
+    std::string root_dir;
+
 
 public:
     Mycontainer() = delete;
@@ -32,6 +35,8 @@ public:
         for (const auto &arg: this->config.args) {
             this->args.push_back(const_cast<char *>(arg.c_str()));
         }
+        root_dir = MycontainerConfig::root + std::to_string(reinterpret_cast<uint64_t>(this));
+        std::filesystem::create_directory(root_dir);
     }
 
     explicit Mycontainer(const std::string &dockerfile_path) {
@@ -40,6 +45,8 @@ public:
         for (auto &arg: config.args) {
             args.emplace_back(arg.data());
         }
+        root_dir = MycontainerConfig::root + std::to_string(reinterpret_cast<uint64_t>(this));
+        std::filesystem::create_directory(root_dir);
     }
 
     Mycontainer &operator=(const Mycontainer &other) = default;
