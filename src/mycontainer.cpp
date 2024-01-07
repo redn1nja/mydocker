@@ -76,8 +76,8 @@ void Mycontainer::mount_namespace(std::string_view new_root, const std::string& 
     std::cout<< mount_place << std::endl;
     for (auto &mount: config.mount_points) {
         auto this_mount = mount_place + mount;
-        std::filesystem::create_directory(std::filesystem::path(this_mount));
-        if (mount_dir(mount, mount_place) != 0) {
+        std::filesystem::create_directories(std::filesystem::path(this_mount));
+        if (mount_dir(mount, this_mount) != 0) {
             std::cerr << "failed to mount " << mount_place << std::endl;
         }
     }
@@ -101,8 +101,9 @@ void Mycontainer::mount_namespace(std::string_view new_root, const std::string& 
         default:
 
             make_wrapper<int, false>(wait)(nullptr);
+            close(sockfd[0]);
             for (auto &mount: config.mount_points) {
-                if (unmount_dir(mount) != 0) {
+                if (unmount_dir("/mnt" + mount) != 0) {
                     std::cerr << "failed to unmount " << mount_place << std::endl;
                 }
             }
