@@ -30,6 +30,8 @@ void Mycontainer::start() {
         case -1:
             std::cerr << "failed to create container" << std::endl;
             exit(EXIT_FAILURE);
+        case 0:
+            break;
         default:
             close(config.get_sockfd()[0]);
             break;

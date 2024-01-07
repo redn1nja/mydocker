@@ -59,6 +59,7 @@ void Mydocker::listen(size_t index) {
                strlen("Failed to listen: already listening another container\n"));
     } else {
         std::cout << "listening " << index << std::endl;
+        attached_container_index = index;
 
         //TODO do listen stuff
         int flags = fcntl(containers[index]->getConfig().get_sockfd()[1], F_GETFL, 0);
@@ -78,18 +79,17 @@ void Mydocker::listen(size_t index) {
 //                break;
 //            }
             // Get user input for the command
-//            std::string userInput;
-////            std::cout << "Enter command: ";
-//            std::getline(std::cin, userInput);
-//            userInput += "\n";  // Add newline to simulate pressing Enter
+            std::string userInput;
+            std::cout << "Enter command: ";
+            std::getline(std::cin, userInput);
+            userInput += "\n";  // Add newline to simulate pressing Enter
 
             // Send the command to Program B via the socket
-//            write(sockfd[1], userInput.c_str(), userInput.size());
+            write(containers[index]->getConfig().get_sockfd()[1], userInput.c_str(), userInput.size());
 //            std::cout.write(buffer, bytesRead);
 
         }
 
-        attached_container_index = index;
     }
 }
 
