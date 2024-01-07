@@ -62,17 +62,17 @@ void Mydocker::listen(size_t index) {
         attached_container_index = index;
 
         //TODO do listen stuff
-        int flags = fcntl(containers[index]->getConfig().get_sockfd()[1], F_GETFL, 0);
+        int flags = fcntl(containers[index]->get_sockfd()[1], F_GETFL, 0);
         if (flags == -1) {
             perror("fcntl");
         }
         flags |= O_NONBLOCK;  // Set the O_NONBLOCK flag
-        if (fcntl(containers[index]->getConfig().get_sockfd()[1], F_SETFL, flags) == -1) {
+        if (fcntl(containers[index]->get_sockfd()[1], F_SETFL, flags) == -1) {
             perror("fcntl");
         }
         while (true) {
             char buffer[4096];
-            ssize_t bytesRead = cat(containers[index]->getConfig().get_sockfd()[1], buffer, sizeof(buffer), psd);
+            ssize_t bytesRead = cat(containers[index]->get_sockfd()[1], buffer, sizeof(buffer), psd);
 
 //            if (bytesRead <= 0) {
 //                // If read returns 0 or negative value, it indicates EOF or an error.
@@ -85,7 +85,7 @@ void Mydocker::listen(size_t index) {
             userInput += "\n";  // Add newline to simulate pressing Enter
 
             // Send the command to Program B via the socket
-            write(containers[index]->getConfig().get_sockfd()[1], userInput.c_str(), userInput.size());
+            write(containers[index]->get_sockfd()[1], userInput.c_str(), userInput.size());
 //            std::cout.write(buffer, bytesRead);
 
         }
@@ -101,7 +101,7 @@ void Mydocker::detach() {
     }
 
     //TODO do detach stuff
-    shutdown(containers[attached_container_index]->getConfig().get_sockfd()[1], SHUT_RDWR);
+    shutdown(containers[attached_container_index]->get_sockfd()[1], SHUT_RDWR);
 
     attached_container_index = -1;
 }

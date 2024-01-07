@@ -33,7 +33,7 @@ void Mycontainer::start() {
         case 0:
             break;
         default:
-            close(config.get_sockfd()[0]);
+//            close(sockfd[0]);
             break;
     }
 }
@@ -41,19 +41,19 @@ void Mycontainer::start() {
 
 void Mycontainer::run() {
 
-    if(dup2(config.get_sockfd()[0], STDIN_FILENO) == -1){
-        std::cerr << "failed to dup2: " << config.get_sockfd()[0] << std::endl;
+    if(dup2(sockfd[0], STDIN_FILENO) == -1){
+        std::cerr << "failed to dup2: " << sockfd[0] << std::endl;
     }
 
-    if (dup2(config.get_sockfd()[0], STDOUT_FILENO) == -1) {
-        std::cerr << "failed to dup2:" << config.get_sockfd()[0] << std::endl;
+    if (dup2(sockfd[0], STDOUT_FILENO) == -1) {
+        std::cerr << "failed to dup2:" << sockfd[0] << std::endl;
     }
-    if (dup2(config.get_sockfd()[0], STDERR_FILENO) == -1) {
-        std::cerr << "failed to dup2: " << config.get_sockfd()[0] << std::endl;
+    if (dup2(sockfd[0], STDERR_FILENO) == -1) {
+        std::cerr << "failed to dup2: " << sockfd[0] << std::endl;
     }
 
-    if(close(config.get_sockfd()[1] < 0)){
-        std::cerr << "failed to close: " << config.get_sockfd()[1] << std::endl;
+    if(close(sockfd[1] < 0)){
+        std::cerr << "failed to close: " << sockfd[1] << std::endl;
     }
 
     create_cgroup(id);

@@ -24,6 +24,7 @@ private:
     bool is_running = false;
     std::string root_dir;
     std::string id;
+    int sockfd[2];
 
 
 public:
@@ -39,6 +40,10 @@ public:
         id = std::to_string(reinterpret_cast<uint64_t>(this));
         root_dir = MycontainerConfig::root + id;
         std::filesystem::create_directory(root_dir);
+
+        if (socketpair(AF_UNIX, SOCK_STREAM, 0, sockfd) == -1) {
+            perror("Socket pair creation failed");
+        }
     }
 
     explicit Mycontainer(const std::string &dockerfile_path) {
@@ -51,6 +56,10 @@ public:
         root_dir = MycontainerConfig::root + id;
         std::filesystem::create_directory(root_dir);
 
+        if (socketpair(AF_UNIX, SOCK_STREAM, 0, sockfd) == -1) {
+            perror("Socket pair creation failed");
+        }
+
     }
 
     Mycontainer &operator=(const Mycontainer &other) = default;
@@ -58,6 +67,8 @@ public:
     Mycontainer(const Mycontainer &other) = default;
 
     std::unique_ptr<Mycontainer> clone() { return std::make_unique<Mycontainer>(*this); }
+
+    [[nodiscard]] int *get_sockfd() { return sockfd; }
 
     void start();
 
