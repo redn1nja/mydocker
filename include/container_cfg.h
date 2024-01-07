@@ -17,7 +17,7 @@ public:
     std::string name;
     static std::string root;
     std::vector<std::string> args;
-    int namespace_flags = CLONE_NEWNS;
+    int namespace_flags = CLONE_NEWNS | CLONE_NEWPID;
     std::string cgroup_name;
     size_t memory_limit_mb = 100; // actually random values
     size_t pids_limit = 10;

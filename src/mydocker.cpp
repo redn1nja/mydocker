@@ -44,8 +44,11 @@ void Mydocker::resume(size_t index) {
 
 void Mydocker::kill_container(size_t index) {
     if (kill(containers[index]->getPID(), SIGKILL) == -1) {
-        std::cerr << "Failed to kill container" << std::endl;
+        writen(psd, "Failed to kill container", strlen("Failed to kill container"));
+        return;
     }
+    std::string kill_msg = "killed: " + std::to_string(containers[index]->getPID());
+    writen(psd, kill_msg.data(), kill_msg.size());
 }
 
 void Mydocker::listen(size_t index) {

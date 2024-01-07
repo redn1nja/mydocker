@@ -30,29 +30,12 @@ void Mycontainer::start() {
         case 0:
             break;
         default:
-
-            //TODO do start stuff
-
-//            signal(SIGCHLD, sigchld_handler);
-//            if (close(config.pipefd_in[0]) != 0) {
-//                std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_in[0] << std::endl;
-//            }
-//            if (close(config.pipefd_out[1]) != 0) {
-//                std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_out[1] << std::endl;
-//            }
-//            if (close(config.pipefd_err[1]) != 0) {
-//                std::cerr << "start Mycontainer: cannot close file descriptor " << config.pipefd_err[1] << std::endl;
-//            }
-//            wait(&status);
-//            std::cout << "exited with status " << (status >> 8) << std::endl;
             break;
     }
 }
 
 
 void Mycontainer::run() {
-
-    std::cout << "running" << std::endl;
 
     create_cgroup(config.cgroup_name);
     set_pids_limit("test", config.pids_limit);

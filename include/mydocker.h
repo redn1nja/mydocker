@@ -31,7 +31,7 @@ static std::unordered_map<std::string, commands> commands_map{{"create",        
                                                           {"list_containers", LIST_CONTAINERS},
                                                           {"stop",            STOP},
                                                           {"resume",          RESUME},
-                                                          {"kill_conatiner",  KILL_CONTAINER},
+                                                          {"kill_container",  KILL_CONTAINER},
                                                           {"listen",          LISTEN},
                                                           {"detach",          DETACH},
 };
