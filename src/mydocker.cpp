@@ -73,6 +73,7 @@ void Mydocker::listen(size_t index) {
         while (true) {
             char buffer[4096];
             ssize_t bytesRead = cat(containers[index]->get_sockfd()[1], buffer, sizeof(buffer), psd);
+            buffer[bytesRead] = '\0';
             std::cout<<buffer<<std::endl;
             // Get user input for the command
             std::string userInput;

@@ -60,6 +60,10 @@ int Mycontainer::child_func(void *arg) {
         std::cerr << "failed to dup2: " << my_container->sockfd[0] << std::endl;
     }
 
+    if(close(my_container->sockfd[0]) == -1){
+        std::cerr << "failed to close: " << my_container->sockfd[0] << std::endl;
+    }
+
     my_container->run();
     return 0;
 }
@@ -78,7 +82,7 @@ void Mycontainer::mount_namespace(std::string_view new_root, const std::string& 
         }
     }
     make_wrapper<int, true>(&mkdir)(path.data(), 0777);
-    std::cout<<"LALALALALAL"<<std::endl;
+    std::cout<<"Let it snow!!!"<<std::endl;
     switch (pid = fork()) {
         case -1:
             std::cerr<<"fork failed"<<std::endl;
