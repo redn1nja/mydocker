@@ -72,15 +72,16 @@ void Mydocker::listen(size_t index) {
             perror("fcntl");
         }
         while (true) {
+            char psd_buffer[4096];
             char buffer[4096];
             ssize_t bytesRead = cat(containers[index]->get_sockfd()[1], buffer, sizeof(buffer), psd);
             buffer[bytesRead] = '\0';
-            std::cout<<buffer<<std::endl;
-            // Get user input for the command
-            std::string userInput;
-            std::getline(std::cin, userInput);
-            userInput += "\n";  // Add newline to simulate pressing Enter
-            write(containers[index]->get_sockfd()[1], userInput.c_str(), userInput.size());
+            ssize_t recvd = recv(psd, psd_buffer, sizeof(psd_buffer), MSG_DONTWAIT);
+            if (recvd > 0 ) {
+                psd_buffer[recvd] = '\n';
+                psd_buffer[recvd + 1] = '\0';
+                write(containers[index]->get_sockfd()[1], psd_buffer, strlen(psd_buffer));
+            }
         }
 
     }

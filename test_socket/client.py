@@ -9,16 +9,17 @@ class DetachException(Exception):
 
 
 def on_press(client):
+    print("pressed buttons")
     raise DetachException()
 
 
 def cat(client):
-    while (True):
+    while True:
         response = client.recv(1024)
         response = response.decode("utf-8")
-        if len(response) == 0:
-            break
         print(response)
+        if (len(response) < 1024 and response[-1] == "\n") or len(response) == 0:
+            break
 
 
 def receive_message(client):
@@ -32,7 +33,7 @@ def receive_message(client):
             response = response.decode("utf-8")
             if response.lower()[0:6] == "closed":
                 break
-            if msg.lower()[0:6] == "listen":
+            if msg.lower().startswith("listen"):
                 print("Listening to container")
                 if "--input" in msg:
                     print("Listening to container with input")
@@ -55,14 +56,13 @@ def receive_message(client):
 def listen_to_container(client, has_input):
     while True:
         try:
-            cat(client)
             if has_input:
                 msg = input("Input for container >>> ")
                 msg = msg + "\n"
                 client.send(msg.encode("utf-8")[:1024])
+            cat(client)
         except DetachException as e:
             receive_message(client)
-            break
 
 
 def run_client(server_ip, server_port):
@@ -70,5 +70,7 @@ def run_client(server_ip, server_port):
     client.connect((server_ip, server_port))
     keyboard.add_hotkey("ctrl + shift + p", lambda: on_press(client))
     receive_message(client)
+
+
 
 run_client("127.0.0.1", int(sys.argv[1]))

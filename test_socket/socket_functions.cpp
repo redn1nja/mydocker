@@ -92,7 +92,9 @@ int cat(int fd, char *buffer, size_t size, int dest_fd) {
         } else if (read_now == 0) {
             break;
         } else {
-            writen(dest_fd, buffer, read_now);
+            if (read_now != size)
+                buffer[read_now] = '\n';
+            writen(dest_fd, buffer, read_now+1);
         }
     }
     return 0;
