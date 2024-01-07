@@ -75,7 +75,6 @@ public:
 
         name = pt.get<std::string>("bin");
         args.emplace_back(name);
-        root = pt.get<std::string>("root", "/opt/mydocker/docker_root");
         memory_limit_mb = pt.get<size_t>("memory_limit_mb", 100);
         pids_limit = pt.get<size_t>("pids_limit", 10);
         cpu_proportion = pt.get<size_t>("cpu_proportion", 20);
