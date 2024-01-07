@@ -86,6 +86,7 @@ public:
         }
         for (const auto &item: pt.get_child("args")) {
             args.push_back(item.second.data());
+
         }
     }
 

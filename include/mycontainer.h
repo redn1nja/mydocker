@@ -37,6 +37,7 @@ public:
         for (const auto &arg: this->config.args) {
             this->args.push_back(const_cast<char *>(arg.c_str()));
         }
+        args.emplace_back(nullptr);
         id = std::to_string(reinterpret_cast<uint64_t>(this));
         root_dir = MycontainerConfig::root + id;
         std::filesystem::create_directory(root_dir);
@@ -52,6 +53,7 @@ public:
         for (auto &arg: config.args) {
             args.emplace_back(arg.data());
         }
+        args.emplace_back(nullptr);
         id = std::to_string(reinterpret_cast<uint64_t>(this));
         root_dir = MycontainerConfig::root + id;
         std::filesystem::create_directory(root_dir);

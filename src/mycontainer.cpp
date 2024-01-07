@@ -71,6 +71,12 @@ int Mycontainer::child_func(void *arg) {
 void Mycontainer::mount_namespace(std::string_view new_root, const std::string& image) {
     make_wrapper<int, true>(&mount)(NULL, "/", NULL, MS_REC | MS_PRIVATE, NULL);
     auto fd_loop = create_loop(image, new_root);
+    auto filename = std::filesystem::path(name).filename().string();
+    if (!std::filesystem::exists(root_dir + "/bin/" + filename)){
+        std::filesystem::copy(name, root_dir + "/bin/" + filename);
+        name = "/bin/" + filename;
+        args[0] = name.data();
+    }
     std::string path = std::string(new_root) + put_old.data();
     std::string mount_place = std::string(new_root) + mount_point.data();
     std::cout<< mount_place << std::endl;
@@ -95,11 +101,10 @@ void Mycontainer::mount_namespace(std::string_view new_root, const std::string& 
 
             make_wrapper<int, false>(&umount2)(put_old.data(), MNT_DETACH);
             std::filesystem::remove_all(put_old);
-
             execv(args[0], args.data());
+            std::cout<< "fail"<<std::endl;
             exit(EXIT_FAILURE);
         default:
-
             make_wrapper<int, false>(wait)(nullptr);
             close(sockfd[0]);
             for (auto &mount: config.mount_points) {
