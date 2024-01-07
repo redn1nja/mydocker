@@ -28,6 +28,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE test_socket)
 
 
 add_executable(test_bin test_binary/main.cpp)
+target_link_options(test_bin PRIVATE -static-libgcc -static-libstdc++ -static)
 add_executable(volumes test_mount_volumes/bind_mount.h test_mount_volumes/bind_mount.cpp test_mount_volumes/main.cpp)
 add_executable(namespaces test_create_namespace/create_namespace.cpp test_create_namespace/create_namespace.h test_create_namespace/main.cpp)
 add_executable(change_root test_chroot/setup_root.cpp test_chroot/setup_root.h test_chroot/main.cpp)

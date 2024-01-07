@@ -74,6 +74,8 @@ void Mycontainer::mount_namespace(std::string_view new_root, const std::string& 
     auto filename = std::filesystem::path(name).filename().string();
     if (!std::filesystem::exists(root_dir + "/bin/" + filename)){
         std::filesystem::copy(name, root_dir + "/bin/" + filename);
+        make_wrapper<int, false>(chown)((root_dir + "/bin/" + filename).data(), getuid(), getgid());
+        make_wrapper<int, false>(chmod)((root_dir + "/bin/" + filename).data(), 0777);
         name = "/bin/" + filename;
         args[0] = name.data();
     }
