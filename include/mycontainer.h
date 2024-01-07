@@ -23,11 +23,12 @@ private:
     MycontainerConfig config;
     bool is_running = false;
     std::string root_dir;
+    std::string id;
 
 
 public:
     Mycontainer() = delete;
-
+    void mount_namespace(std::string_view mount_point, const std::string& image);
     explicit Mycontainer(MycontainerConfig config) :
         name(config.name),
         config(std::move(config)),
@@ -35,7 +36,8 @@ public:
         for (const auto &arg: this->config.args) {
             this->args.push_back(const_cast<char *>(arg.c_str()));
         }
-        root_dir = MycontainerConfig::root + std::to_string(reinterpret_cast<uint64_t>(this));
+        id = std::to_string(reinterpret_cast<uint64_t>(this));
+        root_dir = MycontainerConfig::root + id;
         std::filesystem::create_directory(root_dir);
     }
 
@@ -58,10 +60,6 @@ public:
     void start();
 
     void run();
-
-    void stop(); //TODO implement stop and kill
-
-    void kill();
 
     static int child_func(void *arg);
 

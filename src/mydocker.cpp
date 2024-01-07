@@ -74,4 +74,3 @@ void Mydocker::detach() {
 
     attached_container_index = -1;
 }
-

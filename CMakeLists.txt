@@ -36,17 +36,7 @@ add_executable(socket test_socket/main.cpp
         test_socket/socket_functions.cpp
         test_socket/socket_functions.h)
 
-add_executable(mount_namespace test_mount_volumes/mount_namespaces.cpp
-        test_mount_volumes/mount_namespaces.h
-        test_mount_volumes/main_ns.cpp
-        test_mount_volumes/bind_mount.cpp
-        test_mount_volumes/bind_mount.h)
-target_compile_definitions(mount_namespace PUBLIC IMAGE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/rootfs.img")
 target_compile_definitions(${PROJECT_NAME} PUBLIC IMAGE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/rootfs.img")
-
-INSTALL(PROGRAMS
-        $<TARGET_FILE:mount_namespace>
-        DESTINATION bin)
 
 INSTALL(PROGRAMS
         $<TARGET_FILE:${PROJECT_NAME}>

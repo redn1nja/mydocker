@@ -45,8 +45,7 @@ syscall_wrap<throws, T, Args...> make_wrapper (T syscall (Args...))
 }
 
 int pivot_root(const char *new_root, const char *put_olds);
-int mount_namespace_child (void* arg);
-int mount_namespace(std::string_view mount_point, char** exec_params, const std::vector<std::string>& mounts, const std::string& image);
+
 int create_loop(std::string_view image, std::string_view mountpoint);
 
 
