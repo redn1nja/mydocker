@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 
 #include "mydocker.h"
+#include <sstream>
 
 void Mydocker::create(const std::string &dockerfile_path) {
     if (!std::filesystem::exists(dockerfile_path)) {
@@ -21,8 +22,11 @@ void Mydocker::run(size_t index) { containers[index]->start(); }
 
 void Mydocker::list_containers() {
     for (size_t i = 0; i < containers.size(); ++i) {
-        std::cout << "Container " << i << std::endl;
-        std::cout << containers[i]->getConfig() << std::endl;
+        std::stringstream ss;
+        ss << "Container " << i << std::endl;
+        ss << containers[i]->getConfig() << std::endl;
+        auto str = ss.str();
+        writen(psd, str.data(), str.size());
     }
 }
 
