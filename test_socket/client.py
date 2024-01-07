@@ -20,7 +20,7 @@ def cat(client):
             response = client.recv(1024)
             response = response.decode("utf-8")
             print(response)
-            if (len(response) < 1024 and response[-1] == "\n") or len(response) == 0:
+            if len(response) == 0 or (len(response) < 1024 and response[-1] == "\n"):
                 break
         except socket.timeout:
             break
