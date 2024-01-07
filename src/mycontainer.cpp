@@ -31,12 +31,28 @@ void Mycontainer::start() {
             std::cerr << "failed to create container" << std::endl;
             exit(EXIT_FAILURE);
         default:
+            close(config.get_sockfd()[0]);
             break;
     }
 }
 
 
 void Mycontainer::run() {
+
+    if(dup2(config.get_sockfd()[0], STDIN_FILENO) == -1){
+        std::cerr << "failed to dup2: " << config.get_sockfd()[0] << std::endl;
+    }
+
+    if (dup2(config.get_sockfd()[0], STDOUT_FILENO) == -1) {
+        std::cerr << "failed to dup2:" << config.get_sockfd()[0] << std::endl;
+    }
+    if (dup2(config.get_sockfd()[0], STDERR_FILENO) == -1) {
+        std::cerr << "failed to dup2: " << config.get_sockfd()[0] << std::endl;
+    }
+
+    if(close(config.get_sockfd()[1] < 0)){
+        std::cerr << "failed to close: " << config.get_sockfd()[1] << std::endl;
+    }
 
     create_cgroup(id);
     set_pids_limit(id, config.pids_limit);
