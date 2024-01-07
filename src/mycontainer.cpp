@@ -71,13 +71,21 @@ int Mycontainer::child_func(void *arg) {
 void Mycontainer::mount_namespace(std::string_view new_root, const std::string& image) {
     make_wrapper<int, true>(&mount)(NULL, "/", NULL, MS_REC | MS_PRIVATE, NULL);
     auto fd_loop = create_loop(image, new_root);
+    auto filename = std::filesystem::path(name).filename().string();
+    if (!std::filesystem::exists(root_dir + "/bin/" + filename)){
+        std::filesystem::copy(name, root_dir + "/bin/" + filename);
+        make_wrapper<int, false>(chown)((root_dir + "/bin/" + filename).data(), getuid(), getgid());
+        make_wrapper<int, false>(chmod)((root_dir + "/bin/" + filename).data(), 0777);
+        name = "/bin/" + filename;
+        args[0] = name.data();
+    }
     std::string path = std::string(new_root) + put_old.data();
     std::string mount_place = std::string(new_root) + mount_point.data();
     std::cout<< mount_place << std::endl;
     for (auto &mount: config.mount_points) {
         auto this_mount = mount_place + mount;
-        std::filesystem::create_directory(std::filesystem::path(this_mount));
-        if (mount_dir(mount, mount_place) != 0) {
+        std::filesystem::create_directories(std::filesystem::path(this_mount));
+        if (mount_dir(mount, this_mount) != 0) {
             std::cerr << "failed to mount " << mount_place << std::endl;
         }
     }
@@ -95,14 +103,14 @@ void Mycontainer::mount_namespace(std::string_view new_root, const std::string& 
 
             make_wrapper<int, false>(&umount2)(put_old.data(), MNT_DETACH);
             std::filesystem::remove_all(put_old);
-
             execv(args[0], args.data());
+            std::cout<< "fail"<<std::endl;
             exit(EXIT_FAILURE);
         default:
-
             make_wrapper<int, false>(wait)(nullptr);
+            close(sockfd[0]);
             for (auto &mount: config.mount_points) {
-                if (unmount_dir(mount) != 0) {
+                if (unmount_dir("/mnt" + mount) != 0) {
                     std::cerr << "failed to unmount " << mount_place << std::endl;
                 }
             }

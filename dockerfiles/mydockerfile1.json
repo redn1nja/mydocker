@@ -1,0 +1,7 @@
+{
+  "bin" : "/home/mydocker/mydocker/bin/test_bin",
+  "args" : [],
+  "mount_points" : ["/tmp"],
+  "mem_limit": 200,
+  "pids_limit": 20
+}

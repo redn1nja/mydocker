@@ -16,7 +16,7 @@ def cat(client):
             response = client.recv(1024)
             response = response.decode("utf-8")
             print(response)
-            if (len(response) < 1024 and response[-1] == "\n") or len(response) == 0:
+            if len(response) == 0 or (len(response) < 1024 and response[-1] == "\n"):
                 break
         except socket.timeout:
             break
@@ -27,7 +27,6 @@ def receive_message(client):
         while True:
             msg = input("mydocker >>> ")
             msg = msg + "\n"
-
             client.send(msg.encode("utf-8")[:1024])
             response = client.recv(1024)
             response = response.decode("utf-8")
@@ -41,10 +40,9 @@ def receive_message(client):
                     print("Listening to container with input")
                     listen_to_container(client, True)
                 else:
+                    print("Listening to container")
                     listen_to_container(client, False)
-
             print(f"Received: {response}")
-
     except Exception as e:
         print(f"Error: {e}")
     except KeyboardInterrupt as e:
