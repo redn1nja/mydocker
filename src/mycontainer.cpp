@@ -54,7 +54,7 @@ void Mycontainer::run() {
         std::cerr << "failed to close: " << config.get_sockfd()[1] << std::endl;
     }
 
-    create_cgroup(config.cgroup_name);
+    create_cgroup(id);
     set_pids_limit(id, config.pids_limit);
     set_memory_limit_mb(id, config.memory_limit_mb);
     set_cpu_limit(id, config.cpu_proportion);

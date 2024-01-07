@@ -47,8 +47,10 @@ public:
         for (auto &arg: config.args) {
             args.emplace_back(arg.data());
         }
-        root_dir = MycontainerConfig::root + std::to_string(reinterpret_cast<uint64_t>(this));
+        id = std::to_string(reinterpret_cast<uint64_t>(this));
+        root_dir = MycontainerConfig::root + id;
         std::filesystem::create_directory(root_dir);
+
     }
 
     Mycontainer &operator=(const Mycontainer &other) = default;

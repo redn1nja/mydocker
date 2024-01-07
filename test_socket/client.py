@@ -31,4 +31,4 @@ def run_client(server_ip, server_port):
         print("Connection to server closed")
 
 
-run_client("127.0.0.1", 8001)
+run_client("127.0.0.1", 8000)
