@@ -2,16 +2,12 @@ import socket
 import sys
 
 import keyboard
-
-
-class DetachException(Exception):
-    pass
-
-
 def on_press(client):
-    print("pressed buttons")
-    raise DetachException()
-
+    global listen_mode  # Declare that we are using the global variable
+    listen_mode = False
+    if not listen_mode:
+        client.send("detach".encode("utf-8")[:1024])
+        receive_message(client)
 
 def cat(client):
     client.settimeout(1)  # 1 second timeout
@@ -38,6 +34,8 @@ def receive_message(client):
             if response.lower()[0:6] == "closed":
                 break
             if msg.lower().startswith("listen"):
+                global listen_mode  # Declare that we are using the global variable
+                listen_mode = True
                 print("Listening to container")
                 if "--input" in msg:
                     print("Listening to container with input")
@@ -58,15 +56,15 @@ def receive_message(client):
 
 
 def listen_to_container(client, has_input):
-    while True:
-        try:
+    global listen_mode  # Declare that we are using the global variable
+
+    while listen_mode:
             if has_input:
                 msg = input("Input for container >>> ")
                 msg = msg + "\n"
                 client.send(msg.encode("utf-8")[:1024])
             cat(client)
-        except DetachException as e:
-            receive_message(client)
+
 
 
 def run_client(server_ip, server_port):
@@ -76,5 +74,5 @@ def run_client(server_ip, server_port):
     receive_message(client)
 
 
-
+listen_mode = False
 run_client("127.0.0.1", int(sys.argv[1]))
