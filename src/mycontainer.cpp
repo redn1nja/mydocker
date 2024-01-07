@@ -65,8 +65,6 @@ void Mycontainer::run() {
     set_pids_limit("test", 10);
     set_memory_limit_mb("test", 100);
     set_cpu_limit("test", 5);
-    std::cout<<MycontainerConfig::root<<std::endl;
-    std::cout<<args.size()<<std::endl;
     mount_namespace(MycontainerConfig::root, args.data());
 
 //    std::string mnt = "mnt";

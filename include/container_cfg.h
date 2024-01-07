@@ -7,7 +7,6 @@
 #ifndef MYDOCKER_CONTAINER_CFG_H
 #define MYDOCKER_CONTAINER_CFG_H
 
-const static std::vector<std::string> root_mount_points = {"/usr", "/lib", "/bin", "/lib64", "/proc"};
 class MycontainerConfig {
 private:
     int des_in = 0;
@@ -111,7 +110,7 @@ public:
         output << "memory limit (MB): " << config.memory_limit_mb << std::endl;
         output << "pids limit: " << config.pids_limit << std::endl;
         output << "cpu proportion: " << config.cpu_proportion << std::endl;
-        output << "root: " << config.root << std::endl;
+        output << "root: " << MycontainerConfig::root << std::endl;
         return output;
     }
 };
