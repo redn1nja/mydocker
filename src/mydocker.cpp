@@ -73,19 +73,14 @@ void Mydocker::listen(size_t index) {
         while (true) {
             char buffer[4096];
             ssize_t bytesRead = cat(containers[index]->get_sockfd()[1], buffer, sizeof(buffer), psd);
-
-//            if (bytesRead <= 0) {
-//                // If read returns 0 or negative value, it indicates EOF or an error.
-//                break;
-//            }
+            std::cout<<buffer<<std::endl;
             // Get user input for the command
             std::string userInput;
-            std::cout << "Enter command: ";
             std::getline(std::cin, userInput);
             userInput += "\n";  // Add newline to simulate pressing Enter
-
-            // Send the command to Program B via the socket
             write(containers[index]->get_sockfd()[1], userInput.c_str(), userInput.size());
+
+
 //            std::cout.write(buffer, bytesRead);
 
         }

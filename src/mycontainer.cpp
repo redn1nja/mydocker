@@ -20,9 +20,6 @@ std::string MycontainerConfig::root = "/opt/mydocker/";
 
 
 void Mycontainer::start() {
-    config.set_err(dup(STDERR_FILENO));
-    config.set_in(dup(STDIN_FILENO));
-    config.set_out(dup(STDOUT_FILENO));
     switch (pid = create_process_in_new_ns(&Mycontainer::child_func,
                                            STACK_SIZE,
                                            config.namespace_flags | SIGCHLD,
@@ -30,32 +27,14 @@ void Mycontainer::start() {
         case -1:
             std::cerr << "failed to create container" << std::endl;
             exit(EXIT_FAILURE);
-        case 0:
-            break;
         default:
-//            close(sockfd[0]);
+            close(sockfd[0]);
             break;
     }
 }
 
 
 void Mycontainer::run() {
-
-    if(dup2(sockfd[0], STDIN_FILENO) == -1){
-        std::cerr << "failed to dup2: " << sockfd[0] << std::endl;
-    }
-
-    if (dup2(sockfd[0], STDOUT_FILENO) == -1) {
-        std::cerr << "failed to dup2:" << sockfd[0] << std::endl;
-    }
-    if (dup2(sockfd[0], STDERR_FILENO) == -1) {
-        std::cerr << "failed to dup2: " << sockfd[0] << std::endl;
-    }
-
-    if(close(sockfd[1] < 0)){
-        std::cerr << "failed to close: " << sockfd[1] << std::endl;
-    }
-
     create_cgroup(id);
     set_pids_limit(id, config.pids_limit);
     set_memory_limit_mb(id, config.memory_limit_mb);
@@ -70,6 +49,17 @@ void Mycontainer::run() {
 
 int Mycontainer::child_func(void *arg) {
     auto my_container = static_cast<Mycontainer *>(arg);
+    if(dup2(my_container->sockfd[0], STDIN_FILENO) == -1){
+        std::cerr << "failed to dup2: " << my_container->sockfd[0] << std::endl;
+    }
+
+    if (dup2(my_container->sockfd[0], STDOUT_FILENO) == -1) {
+        std::cerr << "failed to dup2:" << my_container->sockfd[0] << std::endl;
+    }
+    if (dup2(my_container->sockfd[0], STDERR_FILENO) == -1) {
+        std::cerr << "failed to dup2: " << my_container->sockfd[0] << std::endl;
+    }
+
     my_container->run();
     return 0;
 }
@@ -88,6 +78,7 @@ void Mycontainer::mount_namespace(std::string_view new_root, const std::string& 
         }
     }
     make_wrapper<int, true>(&mkdir)(path.data(), 0777);
+    std::cout<<"LALALALALAL"<<std::endl;
     switch (pid = fork()) {
         case -1:
             std::cerr<<"fork failed"<<std::endl;
@@ -100,9 +91,11 @@ void Mycontainer::mount_namespace(std::string_view new_root, const std::string& 
 
             make_wrapper<int, false>(&umount2)(put_old.data(), MNT_DETACH);
             std::filesystem::remove_all(put_old);
+
             execv(args[0], args.data());
             exit(EXIT_FAILURE);
         default:
+
             make_wrapper<int, false>(wait)(nullptr);
             for (auto &mount: config.mount_points) {
                 if (unmount_dir(mount) != 0) {

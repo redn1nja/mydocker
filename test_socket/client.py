@@ -1,5 +1,5 @@
 import socket
-
+import sys
 #import keyboard
 
 #keyboard.add_hotkey("ctrl + shift + p", lambda: print("Hello World!"))
@@ -31,4 +31,4 @@ def run_client(server_ip, server_port):
         print("Connection to server closed")
 
 
-run_client("127.0.0.1", 8000)
+run_client("127.0.0.1", int(sys.argv[1]))
