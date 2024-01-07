@@ -14,10 +14,12 @@ int main(int argc, char **argv) {
         std::cerr << "Usage: " << argv[0] << " <port>" << std::endl;
         return 1;
     }
+
     Mydocker mydocker;
-    struct sockaddr_in server;
+    struct sockaddr_in server{};
     char buf[1024];
     int sd;
+
     if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         std::cerr << "mydocker: failed to create socket" << std::endl;
     }
@@ -32,6 +34,7 @@ int main(int argc, char **argv) {
     listen(sd, 1);
     mydocker.psd = accept(sd, nullptr, nullptr);
     close(sd);
+
     for (;;) {
         int cc = readn(mydocker.psd, buf, sizeof(buf));
         if (cc == 0) {
@@ -45,5 +48,6 @@ int main(int argc, char **argv) {
         boost::split(command_args, command, boost::is_any_of(" "));
         mydocker.execute_command(command_args);
     }
+
     return 0;
 }
