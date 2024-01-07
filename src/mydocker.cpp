@@ -3,6 +3,7 @@
 
 #include "mydocker.h"
 #include <sstream>
+#include <fcntl.h>
 
 void Mydocker::create(const std::string &dockerfile_path) {
     if (!std::filesystem::exists(dockerfile_path)) {
@@ -60,6 +61,33 @@ void Mydocker::listen(size_t index) {
         std::cout << "listening " << index << std::endl;
 
         //TODO do listen stuff
+        int flags = fcntl(containers[index]->getConfig().get_sockfd()[1], F_GETFL, 0);
+        if (flags == -1) {
+            perror("fcntl");
+        }
+        flags |= O_NONBLOCK;  // Set the O_NONBLOCK flag
+        if (fcntl(containers[index]->getConfig().get_sockfd()[1], F_SETFL, flags) == -1) {
+            perror("fcntl");
+        }
+        while (true) {
+            char buffer[4096];
+            ssize_t bytesRead = cat(containers[index]->getConfig().get_sockfd()[1], buffer, sizeof(buffer), psd);
+
+//            if (bytesRead <= 0) {
+//                // If read returns 0 or negative value, it indicates EOF or an error.
+//                break;
+//            }
+            // Get user input for the command
+//            std::string userInput;
+////            std::cout << "Enter command: ";
+//            std::getline(std::cin, userInput);
+//            userInput += "\n";  // Add newline to simulate pressing Enter
+
+            // Send the command to Program B via the socket
+//            write(sockfd[1], userInput.c_str(), userInput.size());
+//            std::cout.write(buffer, bytesRead);
+
+        }
 
         attached_container_index = index;
     }
@@ -73,6 +101,7 @@ void Mydocker::detach() {
     }
 
     //TODO do detach stuff
+    shutdown(containers[attached_container_index]->getConfig().get_sockfd()[1], SHUT_RDWR);
 
     attached_container_index = -1;
 }

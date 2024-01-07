@@ -4,6 +4,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <sched.h>
+#include <sys/socket.h>
 
 #ifndef MYDOCKER_CONTAINER_CFG_H
 #define MYDOCKER_CONTAINER_CFG_H
@@ -13,6 +14,8 @@ private:
     int des_in = 0;
     int des_out = 1;
     int des_err = 2;
+    int sockfd[2];
+
 public:
     std::string name;
     static std::string root;
@@ -35,6 +38,8 @@ public:
     [[nodiscard]] int get_out() const { return des_out; }
 
     [[nodiscard]] int get_err() const { return des_err; }
+
+    [[nodiscard]] int *get_sockfd() { return sockfd; }
 
     MycontainerConfig() = default;
 
@@ -75,6 +80,10 @@ public:
         pids_limit = pt.get<size_t>("pids_limit", 10);
         cpu_proportion = pt.get<size_t>("cpu_proportion", 20);
         cgroup_name = pt.get<std::string>("cgroup_name", "test");
+
+        if (socketpair(AF_UNIX, SOCK_STREAM, 0, sockfd) == -1) {
+            perror("Socket pair creation failed");
+        }
 
         for (const auto &item: pt.get_child("mount_points")) {
             mount_points.push_back(item.second.data());
