@@ -32,19 +32,19 @@ void Mydocker::list_containers() {
 
 void Mydocker::stop(size_t index) {
     if (kill(containers[index]->getPID(), SIGSTOP) == -1) {
-        std::cerr << "Failed to stop container" << std::endl;
+        writen(psd, "Failed to stop container\n", strlen("Failed to stop container\n"));
     }
 }
 
 void Mydocker::resume(size_t index) {
     if (kill(containers[index]->getPID(), SIGCONT) == -1) {
-        std::cerr << "Failed to resume container" << std::endl;
+        writen(psd, "Failed to resume container\n", strlen("Failed to resume container\n"));
     }
 }
 
 void Mydocker::kill_container(size_t index) {
     if (kill(containers[index]->getPID(), SIGKILL) == -1) {
-        writen(psd, "Failed to kill container", strlen("Failed to kill container"));
+        writen(psd, "Failed to kill container\n", strlen("Failed to kill container\n"));
         return;
     }
     std::string kill_msg = "killed: " + std::to_string(containers[index]->getPID());
@@ -54,7 +54,8 @@ void Mydocker::kill_container(size_t index) {
 void Mydocker::listen(size_t index) {
     std::cout << containers[index]->getPID() << std::endl;
     if (attached_container_index != -1) {
-        std::cerr << "Failed to listen: already listening another container" << std::endl;
+        writen(psd, "Failed to listen: already listening another container\n",
+               strlen("Failed to listen: already listening another container\n"));
     } else {
         std::cout << "listening " << index << std::endl;
 
@@ -66,7 +67,8 @@ void Mydocker::listen(size_t index) {
 
 void Mydocker::detach() {
     if (attached_container_index == -1) {
-        std::cerr << "Failed to detach: not listening any container" << std::endl;
+        writen(psd, "Failed to detach: not listening any container\n",
+               strlen("Failed to detach: not listening any container\n"));
         return;
     }
 

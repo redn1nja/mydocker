@@ -12,11 +12,11 @@ def run_client(server_ip, server_port):
         while True:
             msg = input("mydocker >>> ")
             msg = msg + "\n"
+
             client.send(msg.encode("utf-8")[:1024])
             response = client.recv(1024)
             response = response.decode("utf-8")
-
-            if response.lower() == "closed":
+            if response.lower()[0:6] == "closed":
                 break
 
             print(f"Received: {response}")
@@ -31,4 +31,4 @@ def run_client(server_ip, server_port):
         print("Connection to server closed")
 
 
-run_client("127.0.0.1", 8000)
+run_client("127.0.0.1", 8001)

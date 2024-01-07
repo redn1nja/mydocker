@@ -16,7 +16,8 @@ int main(int argc, char **argv) {
     }
 
     Mydocker mydocker;
-    struct sockaddr_in server{};
+
+    struct sockaddr_in server;
     char buf[1024];
     int sd;
 
@@ -31,22 +32,24 @@ int main(int argc, char **argv) {
     if (res == -1) {
         std::cerr << "mydocker: failed to bind socket" << std::endl;
     }
-    listen(sd, 1);
-    mydocker.psd = accept(sd, nullptr, nullptr);
-    close(sd);
 
-    for (;;) {
-        int cc = readn(mydocker.psd, buf, sizeof(buf));
-        if (cc == 0) {
-            writen(mydocker.psd, "closed", sizeof("closed"));
-            exit(EXIT_SUCCESS);
+    while (true) {
+        listen(sd, 1);
+        mydocker.psd = accept(sd, nullptr, nullptr);
+//        close(sd);
+        for (;;) {
+            int cc = readn(mydocker.psd, buf, sizeof(buf));
+            if (cc == 0) {
+                writen(mydocker.psd, "closed", sizeof("closed"));
+                break;
+            }
+            buf[cc] = '\0';
+            std::string command(buf);
+            boost::trim(command);
+            std::vector<std::string> command_args;
+            boost::split(command_args, command, boost::is_any_of(" "));
+            mydocker.execute_command(command_args);
         }
-        buf[cc] = '\0';
-        std::string command(buf);
-        boost::trim(command);
-        std::vector<std::string> command_args;
-        boost::split(command_args, command, boost::is_any_of(" "));
-        mydocker.execute_command(command_args);
     }
 
     return 0;

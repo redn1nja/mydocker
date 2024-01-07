@@ -23,6 +23,7 @@ enum commands {
     KILL_CONTAINER,
     LISTEN,
     DETACH,
+    EXIT,
     WRONG_COMMAND
 };
 
@@ -34,6 +35,7 @@ static std::unordered_map<std::string, commands> commands_map{{"create",        
                                                           {"kill_container",  KILL_CONTAINER},
                                                           {"listen",          LISTEN},
                                                           {"detach",          DETACH},
+                                                          {"exit",            EXIT},
 };
 
 class Mydocker {
@@ -71,6 +73,7 @@ public:
     void detach();
 
     void execute_command(const std::vector<std::string> &command_args) {
+
         commands current_command = WRONG_COMMAND;
         if(commands_map.find(command_args[0]) != commands_map.end()){
             current_command = commands_map[command_args[0]];
@@ -102,6 +105,9 @@ public:
             case DETACH:
                 detach();
                 writen(psd, "mydocker: detached", sizeof("mydocker: detached"));
+                break;
+            case EXIT:
+                writen(psd, "closed", sizeof("closed"));
                 break;
             default:
                 writen(psd, "mydocker: no such command", sizeof("mydocker: no such command"));
