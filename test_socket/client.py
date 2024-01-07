@@ -14,11 +14,15 @@ def on_press(client):
 
 
 def cat(client):
+    client.settimeout(1)  # 1 second timeout
     while True:
-        response = client.recv(1024)
-        response = response.decode("utf-8")
-        print(response)
-        if (len(response) < 1024 and response[-1] == "\n") or len(response) == 0:
+        try:
+            response = client.recv(1024)
+            response = response.decode("utf-8")
+            print(response)
+            if (len(response) < 1024 and response[-1] == "\n") or len(response) == 0:
+                break
+        except socket.timeout:
             break
 
 
