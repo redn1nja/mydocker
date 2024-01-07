@@ -22,10 +22,11 @@ enum commands {
     RESUME,
     KILL_CONTAINER,
     LISTEN,
-    DETACH
+    DETACH,
+    WRONG_COMMAND
 };
 
-static std::unordered_map<std::string, commands> commands{{"create",          CREATE},
+static std::unordered_map<std::string, commands> commands_map{{"create",          CREATE},
                                                           {"run",             RUN},
                                                           {"list_containers", LIST_CONTAINERS},
                                                           {"stop",            STOP},
@@ -70,7 +71,11 @@ public:
     void detach();
 
     void execute_command(const std::vector<std::string> &command_args) {
-        switch (commands[command_args[0]]) {
+        commands current_command = WRONG_COMMAND;
+        if(commands_map.find(command_args[0]) != commands_map.end()){
+            current_command = commands_map[command_args[0]];
+        }
+        switch (current_command) {
             case CREATE:
                 create(command_args[1]);
                 break;
