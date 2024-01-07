@@ -14,11 +14,13 @@ int main(int argc, char **argv) {
         std::cerr << "Usage: " << argv[0] << " <port>" << std::endl;
         return 1;
     }
+
     Mydocker mydocker;
 
     struct sockaddr_in server;
     char buf[1024];
     int sd;
+
     if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         std::cerr << "mydocker: failed to create socket" << std::endl;
     }
@@ -49,5 +51,6 @@ int main(int argc, char **argv) {
             mydocker.execute_command(command_args);
         }
     }
+
     return 0;
 }

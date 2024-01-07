@@ -8,13 +8,12 @@
 #include <vector>
 #include <memory>
 #include "mycontainer.h"
-#include "signal.h"
+#include <csignal>
 #include <iostream>
 #include <unordered_map>
 #include <filesystem>
 #include "socket_functions.h"
 
-extern int fd;
 enum commands {
     CREATE,
     RUN,
@@ -24,15 +23,16 @@ enum commands {
     KILL_CONTAINER,
     LISTEN,
     DETACH,
-    EXIT
+    EXIT,
+    WRONG_COMMAND
 };
 
-static std::unordered_map<std::string, commands> commands{{"create",          CREATE},
+static std::unordered_map<std::string, commands> commands_map{{"create",          CREATE},
                                                           {"run",             RUN},
                                                           {"list_containers", LIST_CONTAINERS},
                                                           {"stop",            STOP},
                                                           {"resume",          RESUME},
-                                                          {"kill_conatiner",  KILL_CONTAINER},
+                                                          {"kill_container",  KILL_CONTAINER},
                                                           {"listen",          LISTEN},
                                                           {"detach",          DETACH},
                                                           {"exit",            EXIT},
@@ -56,21 +56,9 @@ public:
 
     Mydocker(const Mydocker &other) = delete;
 
-    void run(size_t index) { containers[index]->start(); }
+    void create(const std::string &dockerfile_path);
 
-    void create(const std::string &dockerfile_path) {
-        if (!std::filesystem::exists(dockerfile_path)) {
-            std::string error_msg =
-                "mydocker: failed to create container\n" + dockerfile_path + ": no such file or directory";
-            writen(psd, error_msg.c_str(), error_msg.size());
-        } else if (std::filesystem::path(dockerfile_path).extension() != ".json") {
-            std::string error_msg = "mydocker: failed to create container\n" + dockerfile_path + ": not a json file";
-            writen(psd, error_msg.c_str(), error_msg.size());
-        } else {
-            containers.push_back(std::make_unique<Mycontainer>(dockerfile_path));
-            writen(psd, "mydocker: container created", sizeof("mydocker: container created"));
-        }
-    }
+    void run(size_t index);
 
     void list_containers();
 
@@ -85,7 +73,12 @@ public:
     void detach();
 
     void execute_command(const std::vector<std::string> &command_args) {
-        switch (commands[command_args[0]]) {
+
+        commands current_command = WRONG_COMMAND;
+        if(commands_map.find(command_args[0]) != commands_map.end()){
+            current_command = commands_map[command_args[0]];
+        }
+        switch (current_command) {
             case CREATE:
                 create(command_args[1]);
                 break;

@@ -2,81 +2,78 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 
 #include "mydocker.h"
+#include <sstream>
+
+void Mydocker::create(const std::string &dockerfile_path) {
+    if (!std::filesystem::exists(dockerfile_path)) {
+        std::string error_msg =
+            "mydocker: failed to create container\n" + dockerfile_path + ": no such file or directory";
+        writen(psd, error_msg.c_str(), error_msg.size());
+    } else if (std::filesystem::path(dockerfile_path).extension() != ".json") {
+        std::string error_msg = "mydocker: failed to create container\n" + dockerfile_path + ": not a json file";
+        writen(psd, error_msg.c_str(), error_msg.size());
+    } else {
+        containers.push_back(std::make_unique<Mycontainer>(dockerfile_path));
+        writen(psd, "mydocker: container created", sizeof("mydocker: container created"));
+    }
+}
+
+void Mydocker::run(size_t index) { containers[index]->start(); }
+
+void Mydocker::list_containers() {
+    for (size_t i = 0; i < containers.size(); ++i) {
+        std::stringstream ss;
+        ss << "Container " << i << std::endl;
+        ss << containers[i]->getConfig() << std::endl;
+        auto str = ss.str();
+        writen(psd, str.data(), str.size());
+    }
+}
 
 void Mydocker::stop(size_t index) {
     if (kill(containers[index]->getPID(), SIGSTOP) == -1) {
-        std::cerr << "Failed to stop container" << std::endl;
+        writen(psd, "Failed to stop container\n", strlen("Failed to stop container\n"));
     }
 }
 
 void Mydocker::resume(size_t index) {
     if (kill(containers[index]->getPID(), SIGCONT) == -1) {
-        std::cerr << "Failed to resume container" << std::endl;
+        writen(psd, "Failed to resume container\n", strlen("Failed to resume container\n"));
     }
 }
 
 void Mydocker::kill_container(size_t index) {
     if (kill(containers[index]->getPID(), SIGKILL) == -1) {
-        std::cerr << "Failed to kill container" << std::endl;
+        writen(psd, "Failed to kill container\n", strlen("Failed to kill container\n"));
+        return;
     }
+    std::string kill_msg = "killed: " + std::to_string(containers[index]->getPID());
+    writen(psd, kill_msg.data(), kill_msg.size());
 }
 
 void Mydocker::listen(size_t index) {
-    std::cout<<containers[index]->getPID()<<std::endl;
+    std::cout << containers[index]->getPID() << std::endl;
     if (attached_container_index != -1) {
-        std::cerr << "Failed to listen: already listening another container" << std::endl;
+        writen(psd, "Failed to listen: already listening another container\n",
+               strlen("Failed to listen: already listening another container\n"));
     } else {
-        std::cout<<"listening "<<index<<std::endl;
-        std::cout << "in: " << containers[index]->getConfig().pipefd_in[1] << " out: " << containers[index]->getConfig().pipefd_out[0]<< " err: " << containers[index]->getConfig().pipefd_err[0] << std::endl;
-        if (dup2(containers[index]->getConfig().pipefd_in[1], STDIN_FILENO) == -1) {
-            dprintf(fd, "Failed to listen: cannot dup2 STDIN_FILENO %s \n", strerror(errno));
-        }
-        if(dup2( containers[index]->getConfig().pipefd_out[0], STDOUT_FILENO) == -1) {
-            dprintf(fd, "Failed to listen: cannot dup2 STDOUT_FILENO %s \n", strerror(errno));
-        }
-        if(dup2(containers[index]->getConfig().pipefd_err[0], STDERR_FILENO) == -1) {
-            dprintf(fd,"Failed to listen: cannot dup2 STDERR_FILENO %s \n", strerror(errno));
-        }
-//        if (close(containers[index]->getConfig().pipefd_in[1]) != 0) {
-//            std::cerr << "listen Mydocker: cannot close file descriptor " << containers[index]->getConfig().pipefd_in[1]
-//                      << std::endl;
-//        }
-//        if (close(containers[index]->getConfig().pipefd_out[0]) != 0) {
-//            std::cerr << "listen Mydocker: cannot close file descriptor "
-//                      << containers[index]->getConfig().pipefd_out[0] << std::endl;
-//        }z
-//        if (close(containers[index]->getConfig().pipefd_err[0]) != 0) {
-//            std::cerr << "listen Mydocker: cannot close file descriptor "
-//                      << containers[index]->getConfig().pipefd_err[0] << std::endl;
-//        }
+        std::cout << "listening " << index << std::endl;
+
+        //TODO do listen stuff
+
         attached_container_index = index;
     }
 }
 
 void Mydocker::detach() {
-    if (attached_container_index == -1){
-        std::cerr << "Failed to detach: not listening any container" << std::endl;
+    if (attached_container_index == -1) {
+        writen(psd, "Failed to detach: not listening any container\n",
+               strlen("Failed to detach: not listening any container\n"));
         return;
     }
-    dup2 (STDIN_FILENO, containers[attached_container_index]->getConfig().get_in());
-    dup2 (STDOUT_FILENO, containers[attached_container_index]->getConfig().get_out());
-    dup2 (STDERR_FILENO, containers[attached_container_index]->getConfig().get_err());
-//    if (close(containers[attached_container_index]->getConfig().get_in()) != 0) {
 
-//        std::cerr << "detach Mydocker: cannot close file descriptor " << containers[attached_container_index]->getConfig().get_in() << std::endl;
-//    }
-//    if (close(containers[attached_container_index]->getConfig().get_out()) != 0) {
-//        std::cerr << "detach Mydocker: cannot close file descriptor " << containers[attached_container_index]->getConfig().get_out() << std::endl;
-//    }
-//    if (close(containers[attached_container_index]->getConfig().get_err()) != 0) {
-//        std::cerr << "detach Mydocker: cannot close file descriptor " << containers[attached_container_index]->getConfig().get_err() << std::endl;
-//    }
+    //TODO do detach stuff
+
     attached_container_index = -1;
 }
 
-void Mydocker::list_containers() {
-    for (size_t i = 0; i < containers.size(); ++i) {
-        std::cout << "Container " << i << std::endl;
-        std::cout << containers[i]->getConfig() << std::endl;
-    }
-}

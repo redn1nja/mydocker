@@ -62,7 +62,7 @@ void add_cpu_controllers(const std::string &cgroup_name) {
     add_controller(cgroup_name, "cpuset");
 }
 
-void set_cpu_limit(const std::string &cgroup_name, double proportion) {
+void set_cpu_limit(const std::string &cgroup_name, size_t proportion) {
     // proportion can be in the range [1, 10000].
     // doesn't make sense if we are the only child
     add_cpu_controllers(cgroup_name);

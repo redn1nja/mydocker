@@ -1,4 +1,5 @@
 #include "mount_namespaces.h"
+#include "bind_mount.h"
 #include <err.h>
 #include <cstdlib>
 #include <sys/mount.h>
@@ -19,16 +20,27 @@ int mount_namespace_child(void* arg){
     auto **args = reinterpret_cast<char**>(arg);
     std::string_view new_root = args[0];
     char ** exec = &args[1];
-    mount_namespace(new_root, exec);
+    std::string image = IMAGE_PATH;
+    mount_namespace(new_root, exec, {}, image);
     return 0;
 }
 
-int mount_namespace(std::string_view new_root, char ** exec) {
+int mount_namespace(std::string_view new_root, char ** exec, const std::vector<std::string>& mounts, const std::string& image) {
 
-    std::string image_path = IMAGE_PATH;
+
     make_wrapper<int, true>(&mount)(NULL, "/", NULL, MS_REC | MS_PRIVATE, NULL);
-    auto fd = create_loop(image_path, new_root);
+    auto fd = create_loop(image, new_root);
     std::string path = std::string(new_root) + put_old.data();
+    std::string mount_place = std::string(new_root) + mount_point.data();
+    std::cout<< mount_place << std::endl;
+    for (auto &mount: mounts) {
+        std::cout << "mounting " << mount << std::endl;
+        auto this_mount = mount_place + mount;
+        std::filesystem::create_directory(std::filesystem::path(this_mount).string());
+        if (mount_dir(mount, mount_place) != 0) {
+            std::cerr << "failed to mount " << mount_place << std::endl;
+        }
+    }
     make_wrapper<int, true>(&mkdir)(path.data(), 0777);
     switch (fork()) {
         case -1:
@@ -46,6 +58,12 @@ int mount_namespace(std::string_view new_root, char ** exec) {
             exit(EXIT_FAILURE);
         default:
             make_wrapper<int, false>(wait)(nullptr);
+            for (auto &mount: mounts) {
+                std::cout << "unmounting " << mount << std::endl;
+                if (unmount_dir(mount) != 0) {
+                    std::cerr << "failed to unmount " << mount_place << std::endl;
+                }
+            }
             ioctl(fd, LOOP_CLR_FD, 0);
             close(fd);
             exit(EXIT_SUCCESS);

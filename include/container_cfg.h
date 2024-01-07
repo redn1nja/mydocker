@@ -4,61 +4,54 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <sched.h>
+
 #ifndef MYDOCKER_CONTAINER_CFG_H
 #define MYDOCKER_CONTAINER_CFG_H
 
-const static std::vector<std::string> root_mount_points = {"/usr", "/lib", "/bin", "/lib64", "/proc"};
 class MycontainerConfig {
 private:
     int des_in = 0;
     int des_out = 1;
     int des_err = 2;
 public:
-    void set_in(int in) { des_in = in; }
-    void set_out(int out) { des_out = out; }
-    void set_err(int err) { des_err = err; }
-    int get_in() const { return des_in; }
-    int get_out() const { return des_out; }
-    int get_err() const { return des_err; }
-
     std::string name;
     static std::string root;
     std::vector<std::string> args;
-    int pipefd_out[2];
-    int pipefd_in[2];
-    int pipefd_err[2];
-    int namespace_flags = CLONE_NEWNS;
+    int namespace_flags = CLONE_NEWNS | CLONE_NEWPID;
     std::string cgroup_name;
     size_t memory_limit_mb = 100; // actually random values
     size_t pids_limit = 10;
     size_t cpu_proportion = 100;
     std::vector<std::string> mount_points;
 
+    void set_in(int in) { des_in = in; }
+
+    void set_out(int out) { des_out = out; }
+
+    void set_err(int err) { des_err = err; }
+
+    [[nodiscard]] int get_in() const { return des_in; }
+
+    [[nodiscard]] int get_out() const { return des_out; }
+
+    [[nodiscard]] int get_err() const { return des_err; }
+
     MycontainerConfig() = default;
+
     MycontainerConfig(const MycontainerConfig &other) = default;
+
     MycontainerConfig &operator=(const MycontainerConfig &other) = default;
+
     MycontainerConfig(MycontainerConfig &&other) noexcept = default;
+
     MycontainerConfig &operator=(MycontainerConfig &&other) noexcept = default;
+
     ~MycontainerConfig() = default;
 
     [[maybe_unused]] MycontainerConfig(std::vector<std::string> mount_points,
-                       int namespaces_flags) :
-            mount_points(std::move(mount_points)),
-            namespace_flags(namespaces_flags)
-    {
-        if (pipe(pipefd_in) == -1) {
-            perror("pipe in");
-            exit(EXIT_FAILURE);
-        }
-        if (pipe(pipefd_out) == -1) {
-            perror("pipe out");
-            exit(EXIT_FAILURE);
-        }
-        if (pipe(pipefd_err) == -1) {
-            perror("pipe err");
-            exit(EXIT_FAILURE);
-        }
-    };
+                                       int namespaces_flags) :
+        mount_points(std::move(mount_points)),
+        namespace_flags(namespaces_flags) {};
 
     explicit MycontainerConfig(const std::string &dockerfile_path) {
         boost::property_tree::ptree pt;
@@ -67,16 +60,14 @@ public:
         }
         catch (boost::property_tree::json_parser_error &e) {
             std::cerr << "Failed to parse dockerfile: " << e.what() << std::endl;
-//            exit(EXIT_FAILURE);
         }
         catch (std::exception &e) {
             std::cerr << "Failed to parse dockerfile: " << e.what() << std::endl;
-//            exit(EXIT_FAILURE);
         }
         catch (...) {
             std::cerr << "Failed to parse dockerfile" << std::endl;
-//            exit(EXIT_FAILURE);
         }
+
         name = pt.get<std::string>("bin");
         args.emplace_back(name);
         root = pt.get<std::string>("root", "/opt/mydocker/docker_root");
@@ -84,26 +75,14 @@ public:
         pids_limit = pt.get<size_t>("pids_limit", 10);
         cpu_proportion = pt.get<size_t>("cpu_proportion", 20);
         cgroup_name = pt.get<std::string>("cgroup_name", "test");
+
         for (const auto &item: pt.get_child("mount_points")) {
             mount_points.push_back(item.second.data());
         }
         for (const auto &item: pt.get_child("args")) {
             args.push_back(item.second.data());
         }
-            if (pipe(pipefd_in) == -1) {
-                perror("pipe in");
-                exit(EXIT_FAILURE);
-            }
-            if (pipe(pipefd_out) == -1) {
-                perror("pipe out");
-                exit(EXIT_FAILURE);
-            }
-            if (pipe(pipefd_err) == -1) {
-                perror("pipe err");
-                exit(EXIT_FAILURE);
-            }
-        }
-
+    }
 
     friend std::ostream &operator<<(std::ostream &output, const MycontainerConfig &config) {
         output << "container name: " << config.name << std::endl;
@@ -111,7 +90,7 @@ public:
         output << "memory limit (MB): " << config.memory_limit_mb << std::endl;
         output << "pids limit: " << config.pids_limit << std::endl;
         output << "cpu proportion: " << config.cpu_proportion << std::endl;
-        output << "root: " << config.root << std::endl;
+        output << "root: " << MycontainerConfig::root << std::endl;
         return output;
     }
 };

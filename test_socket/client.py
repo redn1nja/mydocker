@@ -23,6 +23,9 @@ def run_client(server_ip, server_port):
 
     except Exception as e:
         print(f"Error: {e}")
+    except KeyboardInterrupt as e:
+        client.close()
+        print("Connection to server closed")
     finally:
         client.close()
         print("Connection to server closed")
