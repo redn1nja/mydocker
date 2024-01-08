@@ -2,12 +2,15 @@ import socket
 import sys
 
 import keyboard
+
+
 def on_press(client):
+    keyboard.write("\n")
     global listen_mode  # Declare that we are using the global variable
     listen_mode = False
     if not listen_mode:
-        client.send("detach".encode("utf-8")[:1024])
-        receive_message(client)
+        client.send("detach\n".encode("utf-8")[:1024])
+
 
 def cat(client):
     client.settimeout(1)  # 1 second timeout
@@ -32,6 +35,7 @@ def receive_message(client):
             response = response.decode("utf-8")
             if response.lower()[0:6] == "closed":
                 break
+            print(f"Received: {response}")
             if msg.lower().startswith("listen"):
                 global listen_mode  # Declare that we are using the global variable
                 listen_mode = True
@@ -42,7 +46,6 @@ def receive_message(client):
                 else:
                     print("Listening to container")
                     listen_to_container(client, False)
-            print(f"Received: {response}")
     except Exception as e:
         print(f"Error: {e}")
     except KeyboardInterrupt as e:
@@ -55,14 +58,13 @@ def receive_message(client):
 
 def listen_to_container(client, has_input):
     global listen_mode  # Declare that we are using the global variable
-
     while listen_mode:
-            if has_input:
-                msg = input("Input for container >>> ")
-                msg = msg + "\n"
-                client.send(msg.encode("utf-8")[:1024])
-            cat(client)
-
+        if has_input:
+            msg = input("Input for container >>> ")
+            msg = msg + "\n"
+            client.send(msg.encode("utf-8")[:1024])
+        cat(client)
+    receive_message(client)
 
 
 def run_client(server_ip, server_port):

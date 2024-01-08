@@ -77,7 +77,9 @@ void Mydocker::listen(size_t index) {
             ssize_t bytesRead = cat(containers[index]->get_sockfd()[1], buffer, sizeof(buffer), psd);
             ssize_t recvd = recv(psd, psd_buffer, sizeof(psd_buffer), MSG_DONTWAIT);
             if (recvd > 0 ) {
-                if (std::string {psd_buffer} + "\0" == "detach") {
+                psd_buffer[recvd] = '\0';
+                std::string is_stop = psd_buffer;
+                if (is_stop.substr(0,6) == "detach") {
                     break;
                 }
                 psd_buffer[recvd] = '\n';
