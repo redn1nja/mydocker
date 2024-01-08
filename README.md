@@ -56,7 +56,8 @@ Python: keyboard, sys, socket <br>
   ```
   detach
   ```
-- print the information about the existing containers```
+- print the information about the existing containers
+  ```
   list_containers
   ```
 - kill the container
