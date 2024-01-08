@@ -100,7 +100,7 @@ public:
                 break;
             case LISTEN:
                 listen(std::stoul(command_args[1]));
-                writen(psd, "mydocker: listening", sizeof("mydocker: listening"));
+//                writen(psd, "mydocker: listening", sizeof("mydocker: listening"));
                 break;
             case DETACH:
                 detach();

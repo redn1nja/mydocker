@@ -5,11 +5,12 @@ import keyboard
 
 
 def on_press(client):
-    keyboard.write("\n")
+
     global listen_mode  # Declare that we are using the global variable
     listen_mode = False
     if not listen_mode:
         client.send("detach\n".encode("utf-8")[:1024])
+        keyboard.write("\n")
 
 
 def cat(client):
