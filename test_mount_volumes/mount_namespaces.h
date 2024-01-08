@@ -25,14 +25,14 @@ public:
         int error_code = errno;
         if (error_code){
             if (throws) {
-                std::string error = strerror(errno);
-                std::cerr<<strerror(errno);
-                ((std::cerr << " , " << std::forward<Args>(args)), ...);
+//                std::string error = strerror(errno);
+//                std::cerr<<strerror(errno);
+//                ((std::cerr << " , " << std::forward<Args>(args)), ...);
             }
-            else{
-                std::cerr<<strerror(errno);
-                ((std::cerr << " , " << std::forward<Args>(args)), ...);
-            }
+//            else{
+////                std::cerr<<strerror(errno);
+////                ((std::cerr << " , " << std::forward<Args>(args)), ...);
+//            }
         }
         return res;
     }

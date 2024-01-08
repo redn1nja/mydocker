@@ -15,11 +15,11 @@ void create_cgroup(const std::string &cgroup_name) {
     if (mkdir(cgroup_folder_path.c_str(), 0755) != 0) {
         std::cerr << "Failed to create cgroup " << cgroup_name << "\n";
     } else {
-        std::cout << "Cgroup directory " << cgroup_name << " created successfully." << std::endl;
+//        std::cout << "Cgroup directory " << cgroup_name << " created successfully." << std::endl;
     }
 
     pid_t pid = getpid();
-    std::cout << "pid: " << " " << pid << std::endl;
+//    std::cout << "pid: " << " " << pid << std::endl;
     std::ofstream procs_file(cgroup_folder_path + "/cgroup.procs");
     if (!procs_file.is_open()) {
         std::cerr << "Failed to open cgroup.procs file for cgroup " << cgroup_name << "\n";

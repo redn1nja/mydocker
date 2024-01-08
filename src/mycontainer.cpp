@@ -81,7 +81,7 @@ void Mycontainer::mount_namespace(std::string_view new_root, const std::string& 
     }
     std::string path = std::string(new_root) + put_old.data();
     std::string mount_place = std::string(new_root) + mount_point.data();
-    std::cout<< mount_place << std::endl;
+    std::cout<< std::endl;
     for (auto &mount: config.mount_points) {
         auto this_mount = mount_place + mount;
         std::filesystem::create_directories(std::filesystem::path(this_mount));
@@ -90,7 +90,7 @@ void Mycontainer::mount_namespace(std::string_view new_root, const std::string& 
         }
     }
     make_wrapper<int, true>(&mkdir)(path.data(), 0777);
-    std::cout<<"Let it snow!!!"<<std::endl;
+//    std::cout<<"Let it snow!!!"<<std::endl;
     switch (pid = fork()) {
         case -1:
             std::cerr<<"fork failed"<<std::endl;

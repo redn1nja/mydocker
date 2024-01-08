@@ -1,5 +1,5 @@
 {
-  "bin" : "/home/mydocker/mydocker/bin/test_bin",
+  "bin" : "/home/sofiiafolv/UCU/Year3_Term1/OS/docker/mydocker/bin/test_bin",
   "args" : [],
   "mount_points" : ["/tmp"],
   "mem_limit": 200,

@@ -48,46 +48,41 @@ void Mydocker::kill_container(size_t index) {
         writen(psd, "Failed to kill container\n", strlen("Failed to kill container\n"));
         return;
     }
-    containers.erase(containers.begin()+static_cast<long>(index));
+    containers.erase(containers.begin() + static_cast<long>(index));
     std::string kill_msg = "killed: " + std::to_string(containers[index]->getPID());
     writen(psd, kill_msg.data(), kill_msg.size());
 }
 
 void Mydocker::listen(size_t index) {
     std::cout << containers[index]->getPID() << std::endl;
-    if (attached_container_index != -1) {
-        writen(psd, "Failed to listen: already listening another container\n",
-               strlen("Failed to listen: already listening another container\n"));
-    } else {
-        std::cout << "listening " << index << std::endl;
-        attached_container_index = index;
 
-        //TODO do listen stuff
-        int flags = fcntl(containers[index]->get_sockfd()[1], F_GETFL, 0);
-        if (flags == -1) {
-            perror("fcntl");
-        }
-        flags |= O_NONBLOCK;  // Set the O_NONBLOCK flag
-        if (fcntl(containers[index]->get_sockfd()[1], F_SETFL, flags) == -1) {
-            perror("fcntl");
-        }
-        while (true) {
-            char psd_buffer[4096];
-            char buffer[4096];
-            ssize_t bytesRead = cat(containers[index]->get_sockfd()[1], buffer, sizeof(buffer), psd);
-            ssize_t recvd = recv(psd, psd_buffer, sizeof(psd_buffer), MSG_DONTWAIT);
-            if (recvd > 0 ) {
-                psd_buffer[recvd] = '\0';
-                std::string is_stop = psd_buffer;
-                if (is_stop.substr(0,6) == "detach") {
-                    break;
-                }
-                psd_buffer[recvd] = '\n';
-                psd_buffer[recvd + 1] = '\0';
-                write(containers[index]->get_sockfd()[1], psd_buffer, strlen(psd_buffer));
+    std::cout << "listening " << index << std::endl;
+    attached_container_index = index;
+
+    //TODO do listen stuff
+    int flags = fcntl(containers[index]->get_sockfd()[1], F_GETFL, 0);
+    if (flags == -1) {
+        perror("fcntl");
+    }
+    flags |= O_NONBLOCK;  // Set the O_NONBLOCK flag
+    if (fcntl(containers[index]->get_sockfd()[1], F_SETFL, flags) == -1) {
+        perror("fcntl");
+    }
+    while (true) {
+        char psd_buffer[4096];
+        char buffer[4096];
+        ssize_t bytesRead = cat(containers[index]->get_sockfd()[1], buffer, sizeof(buffer), psd);
+        ssize_t recvd = recv(psd, psd_buffer, sizeof(psd_buffer), MSG_DONTWAIT);
+        if (recvd > 0) {
+            psd_buffer[recvd] = '\0';
+            std::string is_stop = psd_buffer;
+            if (is_stop.substr(0, 6) == "detach") {
+                break;
             }
+            psd_buffer[recvd] = '\n';
+            psd_buffer[recvd + 1] = '\0';
+            write(containers[index]->get_sockfd()[1], psd_buffer, strlen(psd_buffer));
         }
-
     }
 }
 

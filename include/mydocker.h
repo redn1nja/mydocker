@@ -13,6 +13,8 @@
 #include <unordered_map>
 #include <filesystem>
 #include "socket_functions.h"
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/lexical_cast.hpp>
 
 enum commands {
     CREATE,
@@ -22,7 +24,6 @@ enum commands {
     RESUME,
     KILL_CONTAINER,
     LISTEN,
-    DETACH,
     EXIT,
     WRONG_COMMAND
 };
@@ -34,7 +35,6 @@ static std::unordered_map<std::string, commands> commands_map{{"create",        
                                                           {"resume",          RESUME},
                                                           {"kill_container",  KILL_CONTAINER},
                                                           {"listen",          LISTEN},
-                                                          {"detach",          DETACH},
                                                           {"exit",            EXIT},
 };
 
@@ -102,15 +102,14 @@ public:
                 listen(std::stoul(command_args[1]));
 //                writen(psd, "mydocker: listening", sizeof("mydocker: listening"));
                 break;
-            case DETACH:
-                detach();
-                writen(psd, "mydocker: detached", sizeof("mydocker: detached"));
-                break;
             case EXIT:
                 writen(psd, "closed", sizeof("closed"));
                 break;
             default:
-                writen(psd, "mydocker: no such command", sizeof("mydocker: no such command"));
+                if  (! boost::starts_with(command_args[0],"detach") || command_args[0][0] != '\020'){
+                    writen(psd, std::string{"mydocker: no such command '" + command_args[0] +"'"}.c_str(), std::string{"mydocker: no such command '" + command_args[0] +"'"}.size());
+                }
+                break;
         }
     }
 
