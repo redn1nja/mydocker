@@ -54,9 +54,9 @@ void Mydocker::kill_container(size_t index) {
 }
 
 void Mydocker::listen(size_t index) {
-    std::cout << containers[index]->getPID() << std::endl;
+//    std::cout << containers[index]->getPID() << std::endl;
 
-    std::cout << "listening " << index << std::endl;
+//    std::cout << "listening " << index << std::endl;
     attached_container_index = index;
 
     //TODO do listen stuff
